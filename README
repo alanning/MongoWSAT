@@ -1,7 +1,1 @@
-MongoWSAT
-
-An ASP.NET Web Site Administration Tool with MongoDB Membership and Role Providers.
-
-The original goal of this project was to use the MyWSAT Website Starter Kit code located here:
-http://mywsat.codeplex.com/
-...but running against a MongoDB backend.  It quickly 
+<b>MongoWSAT
