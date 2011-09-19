@@ -4,33 +4,4 @@ An ASP.NET Web Site Administration Tool with MongoDB Membership and Role Provide
 
 The original goal of this project was to use the MyWSAT Website Starter Kit code located here:
 http://mywsat.codeplex.com/
-...but running against a MongoDB backend.  It became quickly apparent that the latest version of MyWSAT is very closely tied to SQL Server (read: too much work to convert).  Therefore an older version of Hunzonian's WSAT Starter Kit was used instead.  Much of the functionality remains the same but the style of the administration site is not quite as nice. 
-
-License:
-The WSAT code is largely unchanged from Hunzonian's original version and retains the original LGPL license.
-
-All other code, including the MongoDB Providers are licensed under the MIT License.
-
-Dependencies:
-All dependencies are included but you may wish to refresh using NuGet to get the latest versions.
-MongoDB CSharp Driver - http://www.mongodb.org/display/DOCS/CSharp+Language+Center 
-FluentMongo - https://github.com/craiggwilson/fluent-mongo
-
-References:
-Many websites were consulted when making this but here are some of the most relevant:
-
-    SQLite Membership, Role, Profile Providers
-    http://www.codeproject.com/KB/aspnet/SQLite-Providers.aspxhttp://www.codeproject.com/KB/aspnet/SQLite-Providers.aspx
-
-    Sample Custom MembershipProvider (MSDN)
-    http://msdn.microsoft.com/en-us/library/6tc47t75.aspx
-    
-    MongoMember (V Slavin)
-    https://github.com/nakedslavin/MongoDB-Membership-Provider--ASP.NET-/ 
-    
-    Mongodb Membership Provider (Teun Duynstee)
-    http://code.google.com/p/aspnetmongoproviders/
-   
-    Custom Membership Provider OnValidatingPassword question
-    http://forums.asp.net/t/991002.aspx/1
-
+...but running against a MongoDB backend.  It quickly 
