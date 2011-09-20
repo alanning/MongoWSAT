@@ -29,7 +29,7 @@ References:
 Many websites were consulted when making this but here are some of the most relevant:
 
     SQLite Membership, Role, Profile Providers
-    http://www.codeproject.com/KB/aspnet/SQLite-Providers.aspxhttp://www.codeproject.com/KB/aspnet/SQLite-Providers.aspx
+    http://www.codeproject.com/KB/aspnet/SQLite-Providers.aspx
 
     Sample Custom MembershipProvider (MSDN)
     http://msdn.microsoft.com/en-us/library/6tc47t75.aspx
