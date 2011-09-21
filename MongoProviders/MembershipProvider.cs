@@ -45,8 +45,8 @@ namespace MongoProviders
         #region Custom Public Properties
 
         public const string DEFAULT_NAME = "MongoMembershipProvider";
-        public const string DEFAULT_DATABASE_NAME = "user";
-        public const string DEFAULT_USER_COLLECTION_NAME = "user";
+        public const string DEFAULT_DATABASE_NAME = "userdb";
+        public const string DEFAULT_USER_COLLECTION_NAME = "users";
 		public const int NEW_PASSWORD_LENGTH = 8;
 		public const int MAX_USERNAME_LENGTH = 256;
 		public const int MAX_PASSWORD_LENGTH = 128;
