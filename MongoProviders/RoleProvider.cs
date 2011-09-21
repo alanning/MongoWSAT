@@ -20,15 +20,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
+using System.Collections.Specialized;
 
 namespace MongoProviders
 {
     public class RoleProvider : System.Web.Security.RoleProvider
     {
-        public override void AddUsersToRoles(string[] usernames, string[] roleNames)
-        {
-            throw new NotImplementedException();
-        }
+        public const string DEFAULT_ROLE_COLLECTION_NAME = "roles";
+        public const string DEFAULT_NAME = "MongoRoleProvider";
 
         public override string ApplicationName
         {
@@ -40,6 +39,62 @@ namespace MongoProviders
             {
                 throw new NotImplementedException();
             }
+        }
+
+
+        /*
+
+        public override void Initialize(string name, NameValueCollection config){
+
+            if (config == null)
+               throw new ArgumentNullException("config");
+
+            if (String.IsNullOrEmpty(name))
+                name = "SqlRoleProvider";
+            if (string.IsNullOrEmpty(config["description"])) {
+                config.Remove("description");
+                config.Add("description", SR.GetString(SR.RoleSqlProvider_description));
+            }
+            base.Initialize(name, config);
+
+            _SchemaVersionCheck = 0;
+
+            _CommandTimeout = SecUtility.GetIntValue( config, "commandTimeout", 30, true, 0 );
+
+            string temp = config["connectionStringName"];
+            if (temp == null || temp.Length < 1)
+                throw new ProviderException(SR.GetString(SR.Connection_name_not_specified));
+            _sqlConnectionString = SqlConnectionHelper.GetConnectionString(temp, true, true);
+            if (_sqlConnectionString == null || _sqlConnectionString.Length < 1) {
+                throw new ProviderException(SR.GetString(SR.Connection_string_not_found, temp));
+            }
+
+            _AppName = config["applicationName"];
+            if (string.IsNullOrEmpty(_AppName))
+                _AppName = SecUtility.GetDefaultAppName();
+
+            if( _AppName.Length > 256 )
+            {
+                throw new ProviderException(SR.GetString(SR.Provider_application_name_too_long));
+            }
+
+            config.Remove("connectionStringName");
+            config.Remove("applicationName");
+            config.Remove("commandTimeout");
+            if (config.Count > 0)
+            {
+                string attribUnrecognized = config.GetKey(0);
+                if (!String.IsNullOrEmpty(attribUnrecognized))
+                    throw new ProviderException(SR.GetString(SR.Provider_unrecognized_attribute, attribUnrecognized));
+            }
+        }
+        
+        */
+
+
+        public override void AddUsersToRoles(string[] usernames, string[] roleNames)
+        {
+            throw new NotImplementedException();
         }
 
         public override void CreateRole(string roleName)

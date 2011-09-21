@@ -179,11 +179,85 @@ namespace MongoProviders.UnitTests
         }
 
         [Test]
+        public void CreateUserWithDefaultInvalidCharacters()
+        {
+            // test default invalid characters
+
+            // Username
+            MembershipCreateStatus status;
+            MembershipUser user = Membership.CreateUser("foo,","xyz",
+                "foo@bar.com", null, null, true, null, out status);
+            Assert.IsNull(user);
+            Assert.AreEqual(MembershipCreateStatus.InvalidUserName, status);
+
+            user = Membership.CreateUser("foo%", "xyz",
+                "foo@bar.com", null, null, true, null, out status);
+            Assert.IsNull(user);
+            Assert.AreEqual(MembershipCreateStatus.InvalidUserName, status);
+
+
+            // Email
+            user = Membership.CreateUser("foo", "xyz",
+                "foo,@bar.com", null, null, true, null, out status);
+            Assert.IsNull(user);
+            Assert.AreEqual(MembershipCreateStatus.InvalidEmail, status);
+
+            user = Membership.CreateUser("foo", "xyz",
+                "foo%@bar.com", null, null, true, null, out status);
+            Assert.IsNull(user);
+            Assert.AreEqual(MembershipCreateStatus.InvalidEmail, status);
+        }
+
+        [Test]
+        public void CreateUserWithCustomInvalidCharacters()
+        {
+            var invalidUserChars = "()-#";
+            var invalidEmailChars = "^/`";
+
+            provider = new MembershipProvider_Accessor();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "local");
+            config.Add("applicationName", "/");
+            config.Add("passwordStrengthRegularExpression", "bar.*");
+            config.Add("passwordFormat", "Hashed");
+            config.Add("invalidUsernameCharacters", invalidUserChars);
+            config.Add("invalidEmailCharacters", invalidEmailChars);
+            provider.Initialize(null, config);
+
+            // Username
+            MembershipCreateStatus status;
+            var username = "foo{0}";
+            foreach (var c in invalidUserChars.Split())
+            {
+                MembershipUser user = provider.CreateUser(
+                    String.Format(username, c),
+                    "xyz",
+                    "foo@bar.com", null, null, true, null, out status);
+                Assert.IsNull(user);
+                Assert.AreEqual(MembershipCreateStatus.InvalidUserName, status);
+            }
+
+            // Email
+            var email = "foo{0}@bar.com";
+            foreach (var c in invalidEmailChars.Split())
+            {
+                MembershipUser user = provider.CreateUser(
+                    "foo",
+                    "xyz",
+                    String.Format(email, c),
+                    null, null, true, null, out status);
+                Assert.IsNull(user);
+                Assert.AreEqual(MembershipCreateStatus.InvalidEmail, status);
+            }
+
+        }
+
+        [Test]
         public void DeleteUser()
         {
             CreateUserWithHashedPassword();
             Assert.IsTrue(provider.DeleteUser("foo", true));
-            var count = _db.GetCollection<User>(_defaultCollectionName).Count();
+            var count = _db.GetCollection<User>(_defaultMembershipCollectionName).Count();
             Assert.AreEqual(0, count);
 
             CreateUserWithHashedPassword();
@@ -196,7 +270,7 @@ namespace MongoProviders.UnitTests
             // in Mongo, all associated data is stored in same document so 
             // passing true or false to DeleteUser will be the same.
             Assert.IsTrue(provider.DeleteUser("foo", true));
-            count = _db.GetCollection<User>(_defaultCollectionName).Count();
+            count = _db.GetCollection<User>(_defaultMembershipCollectionName).Count();
             Assert.AreEqual(0, count);
             //Assert.IsTrue(Membership.DeleteUser("foo", false));
             //table = FillTable("SELECT * FROM my_aspnet_Membership");

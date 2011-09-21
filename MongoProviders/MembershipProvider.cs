@@ -47,6 +47,7 @@ namespace MongoProviders
         public const string DEFAULT_NAME = "MongoMembershipProvider";
         public const string DEFAULT_DATABASE_NAME = "userdb";
         public const string DEFAULT_USER_COLLECTION_NAME = "users";
+        public const string DEFAULT_INVALID_CHARACTERS = ",%";
 		public const int NEW_PASSWORD_LENGTH = 8;
 		public const int MAX_USERNAME_LENGTH = 256;
 		public const int MAX_PASSWORD_LENGTH = 128;
@@ -64,6 +65,20 @@ namespace MongoProviders
             set { _writeExceptionsToEventLog = value; }
         }
 
+        public string InvalidUsernameCharacters
+        {
+            get
+            {
+                return _invalidUsernameCharacters;
+            }
+        }
+        public string InvalidEmailCharacters
+        {
+            get
+            {
+                return _invalidEmailCharacters;
+            }
+        }
         #endregion
 
 
@@ -72,7 +87,7 @@ namespace MongoProviders
         protected int _newPasswordLength = 8;
         protected string _eventSource = DEFAULT_NAME;
         protected string _eventLog = "Application";
-        protected string _exceptionMessage = "An exception occurred. Please check the Event Log.";
+        protected string _exceptionMessage = Resources.ProviderException;
         protected string _connectionString;
         protected MachineKeySection _machineKey;
         protected string _databaseName;
@@ -83,6 +98,8 @@ namespace MongoProviders
         protected IQueryable<User> _users;
 
         protected bool _writeExceptionsToEventLog;
+        protected string _invalidUsernameCharacters;
+        protected string _invalidEmailCharacters;
 
         /// <summary>
         /// A IQueryable list of Users for this Application (User.ApplicationName == this.ApplicationName)
@@ -261,7 +278,6 @@ namespace MongoProviders
         #endregion
 
 
-
         #region Public Methods
 
 
@@ -293,7 +309,7 @@ namespace MongoProviders
             if (String.IsNullOrEmpty(config["description"]))
             {
                 config.Remove("description");
-                config.Add("description", "MongoDB Membership provider");
+                config.Add("description", Resources.MembershipProvider_description);
             }
 
             // Initialize the abstract base class.
@@ -310,11 +326,16 @@ namespace MongoProviders
             _enablePasswordRetrieval = GetConfigValue(config["enablePasswordRetrieval"], false);
             _requiresQuestionAndAnswer = GetConfigValue(config["requiresQuestionAndAnswer"], false);
             _requiresUniqueEmail = GetConfigValue(config["requiresUniqueEmail"], true);
+            _invalidUsernameCharacters = GetConfigValue(config["invalidUsernameCharacters"], DEFAULT_INVALID_CHARACTERS);
+            _invalidEmailCharacters = GetConfigValue(config["invalidEmailCharacters"], DEFAULT_INVALID_CHARACTERS);
             _writeExceptionsToEventLog = GetConfigValue(config["writeExceptionsToEventLog"], true);
             _databaseName = GetConfigValue(config["databaseName"], DEFAULT_DATABASE_NAME);
             _collectionName = GetConfigValue(config["collectionName"], DEFAULT_USER_COLLECTION_NAME);
 
             ValidatePwdStrengthRegularExpression();
+
+            if (_minRequiredNonAlphanumericCharacters > _minRequiredPasswordLength)
+                throw new ProviderException(Resources.MinRequiredNonalphanumericCharacters_can_not_be_more_than_MinRequiredPasswordLength);
 
             string temp_format = config["passwordFormat"];
             if (null == temp_format)
@@ -334,12 +355,12 @@ namespace MongoProviders
                     _passwordFormat = MembershipPasswordFormat.Clear;
                     break;
                 default:
-                    throw new ProviderException("Password format not supported.");
+                    throw new ProviderException(Resources.Provider_bad_password_format);
             }
 
 			if ((PasswordFormat == MembershipPasswordFormat.Hashed) && EnablePasswordRetrieval)
 			{
-				throw new ProviderException("MongoMembershipProvider configuration error: EnablePasswordRetrieval can not be set to true when PasswordFormat is set to \"Hashed\". Check the web configuration file (web.config).");
+                throw new ProviderException(Resources.Provider_can_not_retrieve_hashed_password);
 			}
 
 
@@ -349,10 +370,14 @@ namespace MongoProviders
 
 			if (null == ConnectionStringSettings || null == ConnectionStringSettings.ConnectionString || "" == ConnectionStringSettings.ConnectionString.Trim())
 			{
-				throw new ProviderException("Connection string is empty for MongoMembershipProvider. Check the web configuration file (web.config).");
+                throw new ProviderException(Resources.Connection_name_not_specified);
 			}
 
 			_connectionString = ConnectionStringSettings.ConnectionString;
+            if (null == _connectionString)
+            {
+                throw new ProviderException(Resources.Connection_string_not_found);
+            }
 
 
 			// Check for invalid parameters in the config
@@ -371,6 +396,8 @@ namespace MongoProviders
 			config.Remove("minRequiredNonalphanumericCharacters");
 			config.Remove("passwordStrengthRegularExpression");
             config.Remove("writeExceptionsToEventLog");
+            config.Remove("invalidUsernameCharacters"); 
+            config.Remove("invalidEmailCharacters"); 
             config.Remove("databaseName");
             config.Remove("collectionName");
 
@@ -379,7 +406,7 @@ namespace MongoProviders
 				string key = config.GetKey(0);
 				if (!string.IsNullOrEmpty(key))
 				{
-					throw new ProviderException(String.Concat("MongoMembershipProvider configuration error: Unrecognized attribute: ", key));
+                    throw new ProviderException(String.Format(Resources.Provider_unrecognized_attribute, key));
 				}
 			}
 
@@ -392,7 +419,7 @@ namespace MongoProviders
 
             if (_machineKey.ValidationKey.Contains("AutoGenerate"))
                 if (PasswordFormat != MembershipPasswordFormat.Clear)
-                    throw new ProviderException("You must specify a non-autogenerated machine key to store passwords in the encrypted or hashed formats. Change the machineKey configuration to use a non-autogenerated validation and decryption key.");
+                    throw new ProviderException(Resources.Provider_can_not_autogenerate_machine_key_with_encrypted_or_hashed_password_format);
 
             RegisterUserClassMap();
 
@@ -462,9 +489,9 @@ namespace MongoProviders
 		/// </returns>
         public override bool ChangePassword(string username, string oldPassword, string newPassword)
         {
-			SecUtility.CheckParameter(ref username, true, true, true, MAX_USERNAME_LENGTH, "username");
-			SecUtility.CheckParameter(ref oldPassword, true, true, false, MAX_PASSWORD_LENGTH, "oldPassword");
-			SecUtility.CheckParameter(ref newPassword, true, true, false, MAX_PASSWORD_LENGTH, "newPassword");
+			SecUtility.CheckParameter(ref username, true, true, InvalidUsernameCharacters, MAX_USERNAME_LENGTH, "username");
+			SecUtility.CheckParameter(ref oldPassword, true, true, null, MAX_PASSWORD_LENGTH, "oldPassword");
+			SecUtility.CheckParameter(ref newPassword, true, true, null, MAX_PASSWORD_LENGTH, "newPassword");
 
             User user = GetUserByName(username, "ChangePassword");
 			if (!CheckPassword(user, oldPassword, true))
@@ -473,7 +500,7 @@ namespace MongoProviders
 			if (newPassword.Length < this.MinRequiredPasswordLength)
 			{
                 throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, 
-                    "The length of parameter '{0}' needs to be greater or equal to '{1}'.",
+                    Resources.Password_too_short,
                     "newPassword", this.MinRequiredPasswordLength), "newPassword");
 			}
 
@@ -489,13 +516,18 @@ namespace MongoProviders
                 }
                 if (numNonAlphaNumericChars < this.MinRequiredNonAlphanumericCharacters)
                 {
-                    throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "There must be at least {0} non alpha numeric characters.", this.MinRequiredNonAlphanumericCharacters), "newPassword");
+                    throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, 
+                        Resources.Password_need_more_non_alpha_numeric_chars,
+                        "newPassword",
+                        this.MinRequiredNonAlphanumericCharacters), "newPassword");
                 }
             }
 
 			if ((this.PasswordStrengthRegularExpression.Length > 0) && !Regex.IsMatch(newPassword, this.PasswordStrengthRegularExpression))
 			{
-                throw new ArgumentException("The password does not match the regular expression in the config file.", "newPassword");
+                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture,
+                    Resources.Password_does_not_match_regular_expression,
+                    "newPassword"), "newPassword");
 			}
 
 
@@ -505,10 +537,10 @@ namespace MongoProviders
 			OnValidatingPassword(args);
 			if (args.Cancel)
 			{
-				if (args.FailureInformation != null)
-					throw args.FailureInformation;
-				else
-					throw new MembershipPasswordException("Change password canceled due to new password validation failure.");
+                if (args.FailureInformation != null)
+                    throw args.FailureInformation;
+                else
+                    throw new MembershipPasswordException(Resources.Membership_Custom_Password_Validation_Failure);
 			}
 
 
@@ -540,20 +572,20 @@ namespace MongoProviders
 		/// </returns>
         public override bool ChangePasswordQuestionAndAnswer(string username, string password, string newPasswordQuestion, string newPasswordAnswer)
         {
-			SecUtility.CheckParameter(ref username, true, true, true, MAX_USERNAME_LENGTH, "username");
-			SecUtility.CheckParameter(ref password, true, true, false, MAX_PASSWORD_LENGTH, "password");
+			SecUtility.CheckParameter(ref username, true, true, InvalidUsernameCharacters, MAX_USERNAME_LENGTH, "username");
+			SecUtility.CheckParameter(ref password, true, true, null, MAX_PASSWORD_LENGTH, "password");
 
             User user = GetUserByName(username, "ChangePasswordQuestionAndAnswer");
 			if (!CheckPassword(user, password, true))
 				return false;
 
-			SecUtility.CheckParameter(ref newPasswordQuestion, this.RequiresQuestionAndAnswer, this.RequiresQuestionAndAnswer, false, MAX_PASSWORD_QUESTION_LENGTH, "newPasswordQuestion");
+			SecUtility.CheckParameter(ref newPasswordQuestion, this.RequiresQuestionAndAnswer, this.RequiresQuestionAndAnswer, null, MAX_PASSWORD_QUESTION_LENGTH, "newPasswordQuestion");
 			if (newPasswordAnswer != null)
 			{
 				newPasswordAnswer = newPasswordAnswer.Trim();
 			}
 
-			SecUtility.CheckParameter(ref newPasswordAnswer, this.RequiresQuestionAndAnswer, this.RequiresQuestionAndAnswer, false, MAX_PASSWORD_ANSWER_LENGTH, "newPasswordAnswer");
+			SecUtility.CheckParameter(ref newPasswordAnswer, this.RequiresQuestionAndAnswer, this.RequiresQuestionAndAnswer, null, MAX_PASSWORD_ANSWER_LENGTH, "newPasswordAnswer");
             string encodedPasswordAnswer = null;
 			if (!string.IsNullOrEmpty(newPasswordAnswer))
 			{
@@ -588,7 +620,19 @@ namespace MongoProviders
         {
 			#region Validation
 
-			if (!SecUtility.ValidateParameter(ref password, true, true, false, MAX_PASSWORD_LENGTH))
+			if (!SecUtility.ValidateParameter(ref username, true, true, InvalidUsernameCharacters, MAX_USERNAME_LENGTH))
+			{
+				status = MembershipCreateStatus.InvalidUserName;
+				return null;
+			}
+
+			if (!SecUtility.ValidateParameter(ref email, this.RequiresUniqueEmail, this.RequiresUniqueEmail, InvalidEmailCharacters, MAX_EMAIL_LENGTH))
+			{
+				status = MembershipCreateStatus.InvalidEmail;
+				return null;
+			}
+
+			if (!SecUtility.ValidateParameter(ref password, true, true, null, MAX_PASSWORD_LENGTH))
 			{
 				status = MembershipCreateStatus.InvalidPassword;
 				return null;
@@ -623,19 +667,7 @@ namespace MongoProviders
 			}
 
 
-			if (!SecUtility.ValidateParameter(ref username, true, true, true, MAX_USERNAME_LENGTH))
-			{
-				status = MembershipCreateStatus.InvalidUserName;
-				return null;
-			}
-
-			if (!SecUtility.ValidateParameter(ref email, this.RequiresUniqueEmail, this.RequiresUniqueEmail, false, MAX_EMAIL_LENGTH))
-			{
-				status = MembershipCreateStatus.InvalidEmail;
-				return null;
-			}
-
-			if (!SecUtility.ValidateParameter(ref passwordQuestion, this.RequiresQuestionAndAnswer, true, false, MAX_PASSWORD_QUESTION_LENGTH))
+			if (!SecUtility.ValidateParameter(ref passwordQuestion, this.RequiresQuestionAndAnswer, true, null, MAX_PASSWORD_QUESTION_LENGTH))
 			{
 				status = MembershipCreateStatus.InvalidQuestion;
 				return null;
@@ -885,24 +917,17 @@ namespace MongoProviders
         {
 			if (!EnablePasswordRetrieval)
 			{
-				throw new ProviderException("Password retrieval not enabled.");
-			}
-
-			if (PasswordFormat == MembershipPasswordFormat.Hashed)
-			{
-				throw new ProviderException("Cannot retrieve hashed passwords.");
+                throw new ProviderException(Resources.Membership_PasswordRetrieval_not_supported);
 			}
 
             User user = GetUserByName(username, "GetPassword");
             if (null == user) {
-                var msg = String.Format("User '{0}' could not be found", username);
-                throw new MembershipPasswordException(msg);
+                throw new MembershipPasswordException(Resources.Membership_UserNotFound);
             }
 
             if (user.IsLockedOut)
             {
-                var msg = String.Format("User '{0}' is locked out", username);
-                throw new MembershipPasswordException(msg);
+                throw new MembershipPasswordException(Resources.Membership_AccountLockOut);
             }
 
 
@@ -910,7 +935,7 @@ namespace MongoProviders
             {
                 UpdateFailureCount(user, "passwordAnswer", false);
 
-                throw new MembershipPasswordException("Incorrect password answer.");
+                throw new MembershipPasswordException(Resources.Membership_WrongAnswer);
             }
 
             var password = user.Password;
@@ -968,7 +993,7 @@ namespace MongoProviders
         public override MembershipUser GetUser(object providerUserKey, bool userIsOnline)
         {
             if (!(providerUserKey is Guid)){
-                throw new ArgumentException("Invalid User Id.  Id must be a GUID", "providerUserKey");
+                throw new ArgumentException(Resources.Membership_InvalidProviderUserKey, "providerUserKey");
             }
             if (userIsOnline)
             {
@@ -1031,32 +1056,26 @@ namespace MongoProviders
         {
 			if (!this.EnablePasswordReset)
 			{
-				throw new NotSupportedException("This provider is not configured to allow password resets. To enable password reset, set enablePasswordReset to \"true\" in the configuration file.");
+                throw new NotSupportedException(Resources.Not_configured_to_support_password_resets);
 			}
 
             User user = GetUserByName(username, "ResetPassword");
             if (null == user)
             {
-                var msg = String.Format("User '{0}' not found", username);
-                throw new ProviderException(msg);
+                throw new ProviderException(Resources.Membership_UserNotFound);
             }
             if (user.IsLockedOut)
             {
-                throw new MembershipPasswordException("The supplied user is locked out.");
+                throw new ProviderException(Resources.Membership_AccountLockOut);
             }
 
 
-            if (null == answer && RequiresQuestionAndAnswer)
-            {
-                UpdateFailureCount(user, "passwordAnswer", false);
-                throw new ProviderException("Password answer required for password reset.");
-            }
-
-            if (RequiresQuestionAndAnswer && !ComparePasswords(answer, user.PasswordAnswer, user.PasswordSalt, user.PasswordFormat))
+            if (RequiresQuestionAndAnswer && 
+                (null == answer || !ComparePasswords(answer, user.PasswordAnswer, user.PasswordSalt, user.PasswordFormat)))
             {
                 UpdateFailureCount(user, "passwordAnswer", false);
 
-                throw new MembershipPasswordException("Incorrect password answer.");
+                throw new MembershipPasswordException(Resources.Membership_InvalidAnswer);
             }
 
 			string newPassword = Membership.GeneratePassword(NEW_PASSWORD_LENGTH, MinRequiredNonAlphanumericCharacters);
@@ -1070,7 +1089,7 @@ namespace MongoProviders
                 if (args.FailureInformation != null)
                     throw args.FailureInformation;
                 else
-                    throw new MembershipPasswordException("Reset password canceled due to password validation failure.");
+                    throw new MembershipPasswordException(Resources.Membership_Custom_Password_Validation_Failure);
 
             user.Password = newPassword;
             user.LastPasswordChangedDate = DateTime.UtcNow;
@@ -1117,8 +1136,7 @@ namespace MongoProviders
             User u = GetUserByName(user.UserName, "UpdateUser");
             if (null == user)
             {
-                var msg = String.Format("User '{0}' not found", user.UserName);
-                throw new ProviderException(msg);
+                throw new ProviderException(Resources.Membership_UserNotFound);
             }
 
             u.Email = user.Email;
@@ -1143,7 +1161,7 @@ namespace MongoProviders
 		/// </returns>
         public override bool ValidateUser(string username, string password)
         {
-			if (!SecUtility.ValidateParameter(ref username, true, true, true, MAX_USERNAME_LENGTH) || !SecUtility.ValidateParameter(ref password, true, true, false, MAX_PASSWORD_LENGTH))
+			if (!SecUtility.ValidateParameter(ref username, true, true, InvalidUsernameCharacters, MAX_USERNAME_LENGTH) || !SecUtility.ValidateParameter(ref password, true, true, null, MAX_PASSWORD_LENGTH))
 			{
 				return false;
 			}
@@ -1281,7 +1299,7 @@ namespace MongoProviders
                 return null;
             }
             string wildcard = null;
-            if (strToMatch.Contains("%")){
+            if (strToMatch.StartsWith("%") || strToMatch.EndsWith("%")){
                 wildcard = "%";
             }
 
@@ -1301,7 +1319,16 @@ namespace MongoProviders
 
             // string contains wildcard
 
-            var stripped = strToMatch.ToLowerInvariant().Replace(wildcard,"");
+            var stripped = strToMatch.ToLowerInvariant();
+
+            if (stripped.StartsWith("%"))
+            {
+                stripped = stripped.Substring(1);
+            }
+            if (stripped.EndsWith("%"))
+            {
+                stripped = stripped.Substring(0, stripped.Length - 1);
+            }
 
 
             // check for "%mit%" case
@@ -1577,7 +1604,9 @@ namespace MongoProviders
 					HashAlgorithm algorithm = HashAlgorithm.Create(Membership.HashAlgorithmType);
 					if (null == algorithm)
 					{
-						throw new ProviderException(String.Concat("MongoMembershipProvider configuration error: HashAlgorithm.Create() does not recognize the hash algorithm ", Membership.HashAlgorithmType, "."));
+						throw new ProviderException(String.Format(
+                            Resources.Provider_unrecognized_hash_algorithm, 
+                            Membership.HashAlgorithmType));
 					}
 					inArray = algorithm.ComputeHash(dst);
 
@@ -1611,7 +1640,7 @@ namespace MongoProviders
 					}
 					break;
 				case MembershipPasswordFormat.Hashed:
-					throw new ProviderException("Cannot un-encode a hashed password.");
+                    throw new ProviderException(Resources.Provider_can_not_decode_hashed_password);
 				default:
 					throw new ProviderException("Unsupported password format.");
 			}
@@ -1682,6 +1711,7 @@ namespace MongoProviders
 
         #endregion
 
+
     }
 
 
@@ -1699,13 +1729,13 @@ namespace MongoProviders
 		/// <param name="param">The parameter to check.</param>
 		/// <param name="checkForNull">When <c>true</c>, verify <paramref name="param"/> is not null.</param>
 		/// <param name="checkIfEmpty">When <c>true</c> verify <paramref name="param"/> is not an empty string.</param>
-		/// <param name="checkForCommas">When <c>true</c> verify <paramref name="param"/> does not contain a comma.</param>
+		/// <param name="invalidChars">When not null, verify <paramref name="param"/> does not contain any of the supplied characters.</param>
 		/// <param name="maxSize">The maximum allowed length of <paramref name="param"/>.</param>
 		/// <param name="paramName">Name of the parameter to check. This is passed to the exception if one is thrown.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="param"/> is null and <paramref name="checkForNull"/> is true.</exception>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="param"/> does not satisfy one of the remaining requirements.</exception>
 		/// <remarks>This method performs the same implementation as Microsoft's version at System.Web.Util.SecUtility.</remarks>
-		internal static void CheckParameter(ref string param, bool checkForNull, bool checkIfEmpty, bool checkForCommas, int maxSize, string paramName)
+		internal static void CheckParameter(ref string param, bool checkForNull, bool checkIfEmpty, string invalidChars, int maxSize, string paramName)
 		{
             if (null == param)
 			{
@@ -1719,15 +1749,25 @@ namespace MongoProviders
 				param = param.Trim();
 				if (checkIfEmpty && (param.Length < 1))
 				{
-					throw new ArgumentException(String.Format("The parameter '{0}' must not be empty.", paramName), paramName);
+					throw new ArgumentException(String.Format(Resources.Parameter_can_not_be_empty, paramName), paramName);
 				}
 				if ((maxSize > 0) && (param.Length > maxSize))
 				{
-					throw new ArgumentException(String.Format("The parameter '{0}' is too long: it must not exceed {1} chars in length.", paramName, maxSize.ToString(CultureInfo.InvariantCulture)), paramName);
+					throw new ArgumentException(String.Format(Resources.Parameter_too_long, paramName, maxSize.ToString(CultureInfo.InvariantCulture)), paramName);
 				}
-				if (checkForCommas && param.Contains(","))
+				if (!String.IsNullOrWhiteSpace(invalidChars))
 				{
-					throw new ArgumentException(String.Format("The parameter '{0}' must not contain commas.", paramName), paramName);
+                    var chars = invalidChars.ToCharArray();
+                    for (int i = 0; i < chars.Length; i++)
+                    {
+                        if (param.Contains(chars[i]))
+                        {
+                            throw new ArgumentException(String.Format(Resources.Parameter_contains_invalid_characters, 
+                                paramName, 
+                                String.Join("','", invalidChars.Split())), 
+                                paramName);
+                        }
+                    }
 				}
 			}
 		}
@@ -1738,17 +1778,31 @@ namespace MongoProviders
 		/// <param name="param">The parameter to check.</param>
 		/// <param name="checkForNull">When <c>true</c>, verify <paramref name="param"/> is not null.</param>
 		/// <param name="checkIfEmpty">When <c>true</c> verify <paramref name="param"/> is not an empty string.</param>
-		/// <param name="checkForCommas">When <c>true</c> verify <paramref name="param"/> does not contain a comma.</param>
+		/// <param name="invalidChars">When not null, verify <paramref name="param"/> does not contain any of the supplied characters.</param>
 		/// <param name="maxSize">The maximum allowed length of <paramref name="param"/>.</param>
 		/// <returns>Returns <c>true</c> if all requirements are met; otherwise returns <c>false</c>.</returns>
-		internal static bool ValidateParameter(ref string param, bool checkForNull, bool checkIfEmpty, bool checkForCommas, int maxSize)
+		internal static bool ValidateParameter(ref string param, bool checkForNull, bool checkIfEmpty, string invalidChars, int maxSize)
 		{
             if (null == param)
 			{
 				return !checkForNull;
 			}
 			param = param.Trim();
-			return (((!checkIfEmpty || (param.Length >= 1)) && ((maxSize <= 0) || (param.Length <= maxSize))) && (!checkForCommas || !param.Contains(",")));
+
+            bool valid = (!checkIfEmpty || (param.Length >= 1)) &&
+                ((maxSize <= 0) || (param.Length <= maxSize));
+
+            if (valid && !String.IsNullOrWhiteSpace(invalidChars))
+            {
+                var chars = invalidChars.ToCharArray();
+                var i = 0;
+                while (valid && i < chars.Length) {
+                    valid &= !param.Contains(chars[i]);
+                    i++;
+                }
+            }
+
+            return valid;
 		}
 
 	}
