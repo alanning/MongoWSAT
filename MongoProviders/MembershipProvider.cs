@@ -809,7 +809,12 @@ namespace MongoProviders
 		/// <summary>
 		/// Gets a collection of membership users where the e-mail address matches the specified string.
 		/// </summary>
-		/// <param name="emailToMatch">The e-mail address to search for.</param>
+		/// <param name="emailToMatch">The e-mail address to search for.
+        /// Match string may contain the standard SQL LIKE wildcard: %
+        ///   "sm%"  -> StartsWith("sm")
+        ///   "%ith" -> EndsWith("ith")
+        ///   "%mit%" -> Contains("mit")
+        /// </param>
 		/// <param name="pageIndex">The index of the page of results to return. <paramref name="pageIndex"/> is zero-based.</param>
 		/// <param name="pageSize">The size of the page of results to return.</param>
 		/// <param name="totalRecords">The total number of matched users.</param>
