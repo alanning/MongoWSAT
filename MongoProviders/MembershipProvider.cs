@@ -34,44 +34,40 @@ using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
 using FluentMongo.Linq;
 using System.Globalization;
+using MongoDB.Bson;
+using MongoDB.Driver.Builders;
 
-namespace NimbleJump.MongoProviders
+namespace MongoProviders
 {
-    public class MongoMembershipProvider : MembershipProvider
+    public class MembershipProvider : System.Web.Security.MembershipProvider
     {
 
-        #region References
-        // references:
+        #region Custom Public Properties
+
+        public const string DEFAULT_NAME = "MongoMembershipProvider";
+        public const string DEFAULT_DATABASE_NAME = "user";
+        public const string DEFAULT_USER_COLLECTION_NAME = "user";
+		public const int NEW_PASSWORD_LENGTH = 8;
+		public const int MAX_USERNAME_LENGTH = 256;
+		public const int MAX_PASSWORD_LENGTH = 128;
+		public const int MAX_PASSWORD_ANSWER_LENGTH = 128;
+		public const int MAX_EMAIL_LENGTH = 256;
+		public const int MAX_PASSWORD_QUESTION_LENGTH = 256;
+
         //
-        // SQLite Membership, Role, Profile Providers
-        // http://www.codeproject.com/KB/aspnet/SQLite-Providers.aspxhttp://www.codeproject.com/KB/aspnet/SQLite-Providers.aspx
+        // If false, exceptions are thrown to the caller. If true,
+        // exceptions are written to the event log.
         //
-        // Sample Custom MembershipProvider (MSDN)
-        // http://msdn.microsoft.com/en-us/library/6tc47t75.aspx
-        //
-        // MongoMember (V Slavin)
-        // https://github.com/nakedslavin/MongoDB-Membership-Provider--ASP.NET-/ 
-        //
-        // Mongodb Membership Provider (Teun Duynstee)
-        // http://code.google.com/p/aspnetmongoproviders/
-        //
-        // Custom Membership Provider OnValidatingPassword question
-        // http://forums.asp.net/t/991002.aspx/1
-        //
+        public bool WriteExceptionsToEventLog
+        {
+            get { return _writeExceptionsToEventLog; }
+            set { _writeExceptionsToEventLog = value; }
+        }
+
         #endregion
 
 
         #region Protected Properties
-
-        protected const string DEFAULT_NAME = "MongoMembershipProvider";
-        protected const string DEFAULT_DATABASE_NAME = "test";
-        protected const string USERS_COLLECTION_NAME = "users";
-		protected const int NEW_PASSWORD_LENGTH = 8;
-		protected const int MAX_USERNAME_LENGTH = 256;
-		protected const int MAX_PASSWORD_LENGTH = 128;
-		protected const int MAX_PASSWORD_ANSWER_LENGTH = 128;
-		protected const int MAX_EMAIL_LENGTH = 256;
-		protected const int MAX_PASSWORD_QUESTION_LENGTH = 256;
 
         protected int _newPasswordLength = 8;
         protected string _eventSource = DEFAULT_NAME;
@@ -80,6 +76,7 @@ namespace NimbleJump.MongoProviders
         protected string _connectionString;
         protected MachineKeySection _machineKey;
         protected string _databaseName;
+        protected string _collectionName;
 
         protected MongoServer _server;
         protected MongoDatabase _db;
@@ -100,7 +97,7 @@ namespace NimbleJump.MongoProviders
                     // error handling is generally not needed but here in case implementation details change.
                     try
                     {
-                        _users = _db.GetCollection<User>(USERS_COLLECTION_NAME).AsQueryable().Where(u => u.ApplicationName == this.ApplicationName);
+                        _users = _db.GetCollection<User>(_collectionName).AsQueryable().Where(u => u.ApplicationName == this.ApplicationName);
                     }
                     catch (Exception ex)
                     {
@@ -112,22 +109,6 @@ namespace NimbleJump.MongoProviders
                 return _users;
             }
         }
-
-        #endregion
-
-
-        #region Custom Public Properties
-
-        //
-        // If false, exceptions are thrown to the caller. If true,
-        // exceptions are written to the event log.
-        //
-        public bool WriteExceptionsToEventLog
-        {
-            get { return _writeExceptionsToEventLog; }
-            set { _writeExceptionsToEventLog = value; }
-        }
-
 
         #endregion
 
@@ -306,10 +287,10 @@ namespace NimbleJump.MongoProviders
             // Initialize values from web.config.
             //
 
-            if (config == null)
+            if (null == config)
                 throw new ArgumentNullException("config");
 
-            if (name == null || name.Length == 0)
+            if (null == name || 0 == name.Length)
                 name = DEFAULT_NAME;
 
             if (String.IsNullOrEmpty(config["description"]))
@@ -329,29 +310,30 @@ namespace NimbleJump.MongoProviders
             _minRequiredPasswordLength = GetConfigValue(config["minRequiredPasswordLength"], 7);
             _passwordStrengthRegularExpression = GetConfigValue(config["passwordStrengthRegularExpression"], "");
             _enablePasswordReset = GetConfigValue(config["enablePasswordReset"], true);
-            _enablePasswordRetrieval = GetConfigValue(config["enablePasswordRetrieval"], true);
+            _enablePasswordRetrieval = GetConfigValue(config["enablePasswordRetrieval"], false);
             _requiresQuestionAndAnswer = GetConfigValue(config["requiresQuestionAndAnswer"], false);
             _requiresUniqueEmail = GetConfigValue(config["requiresUniqueEmail"], true);
             _writeExceptionsToEventLog = GetConfigValue(config["writeExceptionsToEventLog"], true);
             _databaseName = GetConfigValue(config["databaseName"], DEFAULT_DATABASE_NAME);
+            _collectionName = GetConfigValue(config["collectionName"], DEFAULT_USER_COLLECTION_NAME);
 
             ValidatePwdStrengthRegularExpression();
 
             string temp_format = config["passwordFormat"];
-            if (temp_format == null)
+            if (null == temp_format)
             {
                 temp_format = "Hashed";
             }
 
-            switch (temp_format)
+            switch (temp_format.ToLowerInvariant())
             {
-                case "Hashed":
+                case "hashed":
                     _passwordFormat = MembershipPasswordFormat.Hashed;
                     break;
-                case "Encrypted":
+                case "encrypted":
                     _passwordFormat = MembershipPasswordFormat.Encrypted;
                     break;
-                case "Clear":
+                case "clear":
                     _passwordFormat = MembershipPasswordFormat.Clear;
                     break;
                 default:
@@ -368,7 +350,7 @@ namespace NimbleJump.MongoProviders
             // Initialize Connection String
             ConnectionStringSettings ConnectionStringSettings = ConfigurationManager.ConnectionStrings[config["connectionStringName"]];
 
-			if (ConnectionStringSettings == null || ConnectionStringSettings.ConnectionString == null || ConnectionStringSettings.ConnectionString.Trim() == "")
+			if (null == ConnectionStringSettings || null == ConnectionStringSettings.ConnectionString || "" == ConnectionStringSettings.ConnectionString.Trim())
 			{
 				throw new ProviderException("Connection string is empty for MongoMembershipProvider. Check the web configuration file (web.config).");
 			}
@@ -391,7 +373,9 @@ namespace NimbleJump.MongoProviders
 			config.Remove("minRequiredPasswordLength");
 			config.Remove("minRequiredNonalphanumericCharacters");
 			config.Remove("passwordStrengthRegularExpression");
+            config.Remove("writeExceptionsToEventLog");
             config.Remove("databaseName");
+            config.Remove("collectionName");
 
 			if (config.Count > 0)
 			{
@@ -407,24 +391,54 @@ namespace NimbleJump.MongoProviders
             // Get encryption and decryption key information from the configuration.
             Configuration cfg =
               WebConfigurationManager.OpenWebConfiguration(System.Web.Hosting.HostingEnvironment.ApplicationVirtualPath);
-            _machineKey = (MachineKeySection)cfg.GetSection("system.web/machineKey");
+            _machineKey = (MachineKeySection)ConfigurationManager.GetSection("system.web/machineKey");
 
             if (_machineKey.ValidationKey.Contains("AutoGenerate"))
                 if (PasswordFormat != MembershipPasswordFormat.Clear)
-                    throw new ProviderException("Hashed or Encrypted passwords " +
-                                                "are not supported with auto-generated keys.");
+                    throw new ProviderException("You must specify a non-autogenerated machine key to store passwords in the encrypted or hashed formats. Change the machineKey configuration to use a non-autogenerated validation and decryption key.");
 
-
-            // Initialize Mongo Mappings
-            BsonClassMap.RegisterClassMap<User>(cm =>
-            {
-                cm.AutoMap();
-                cm.SetIgnoreExtraElements(true);
-            });
+            RegisterUserClassMap();
 
             // Initialize MongoDB Server
             _server = MongoServer.Create(_connectionString);
             _db = _server.GetDatabase(_databaseName);
+        }
+
+        protected void RegisterUserClassMap()
+        {
+            if (!BsonClassMap.IsClassMapRegistered(typeof(User)))
+            {
+                // Initialize Mongo Mappings
+                BsonClassMap.RegisterClassMap<User>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.SetIgnoreExtraElements(true);
+                    cm.GetMemberMap(c => c.Username).SetElementName("uname");
+                    cm.GetMemberMap(c => c.LowercaseUsername).SetElementName("lname");
+                    cm.GetMemberMap(c => c.DisplayName).SetElementName("dname");
+                    cm.GetMemberMap(c => c.ApplicationName).SetElementName("aname");
+                    cm.GetMemberMap(c => c.Comment).SetElementName("cmnt");
+                    cm.GetMemberMap(c => c.CreateDate).SetElementName("create");
+                    cm.GetMemberMap(c => c.Email).SetElementName("email");
+                    cm.GetMemberMap(c => c.LowercaseEmail).SetElementName("lemail");
+                    cm.GetMemberMap(c => c.FailedPasswordAnswerAttemptCount).SetElementName("anscount");
+                    cm.GetMemberMap(c => c.FailedPasswordAttemptCount).SetElementName("passcount");
+                    cm.GetMemberMap(c => c.FailedPasswordAnswerAttemptWindowStart).SetElementName("answindow");
+                    cm.GetMemberMap(c => c.FailedPasswordAttemptWindowStart).SetElementName("passwindow");
+                    cm.GetMemberMap(c => c.IsApproved).SetElementName("apprvd");
+                    cm.GetMemberMap(c => c.IsLockedOut).SetElementName("lockd");
+                    cm.GetMemberMap(c => c.LastActivityDate).SetElementName("actdate");
+                    cm.GetMemberMap(c => c.LastLockedOutDate).SetElementName("lockdate");
+                    cm.GetMemberMap(c => c.LastLoginDate).SetElementName("logindate");
+                    cm.GetMemberMap(c => c.LastPasswordChangedDate).SetElementName("passdate");
+                    cm.GetMemberMap(c => c.Password).SetElementName("pass");
+                    cm.GetMemberMap(c => c.PasswordAnswer).SetElementName("ans");
+                    cm.GetMemberMap(c => c.PasswordFormat).SetElementName("fmt");
+                    cm.GetMemberMap(c => c.PasswordQuestion).SetElementName("qstion");
+                    cm.GetMemberMap(c => c.PasswordSalt).SetElementName("salt");
+
+                });
+            }
         }
 
         protected T GetConfigValue<T>(string configValue, T defaultValue)
@@ -461,7 +475,9 @@ namespace NimbleJump.MongoProviders
 
 			if (newPassword.Length < this.MinRequiredPasswordLength)
 			{
-				throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "The password must be at least {0} characters.", this.MinRequiredPasswordLength));
+                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, 
+                    "The length of parameter '{0}' needs to be greater or equal to '{1}'.",
+                    "newPassword", this.MinRequiredPasswordLength), "newPassword");
 			}
 
             if (this.MinRequiredNonAlphanumericCharacters > 0)
@@ -476,13 +492,13 @@ namespace NimbleJump.MongoProviders
                 }
                 if (numNonAlphaNumericChars < this.MinRequiredNonAlphanumericCharacters)
                 {
-                    throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "There must be at least {0} non alpha numeric characters.", this.MinRequiredNonAlphanumericCharacters));
+                    throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, "There must be at least {0} non alpha numeric characters.", this.MinRequiredNonAlphanumericCharacters), "newPassword");
                 }
             }
 
 			if ((this.PasswordStrengthRegularExpression.Length > 0) && !Regex.IsMatch(newPassword, this.PasswordStrengthRegularExpression))
 			{
-				throw new ArgumentException("The password does not match the regular expression in the config file.");
+                throw new ArgumentException("The password does not match the regular expression in the config file.", "newPassword");
 			}
 
 
@@ -587,7 +603,7 @@ namespace NimbleJump.MongoProviders
                 return null;
             }
 
-			if (passwordAnswer != null)
+			if (null != passwordAnswer)
 			{
 				passwordAnswer = passwordAnswer.Trim();
 			}
@@ -628,7 +644,7 @@ namespace NimbleJump.MongoProviders
 				return null;
 			}
 
-			if ((providerUserKey != null) && !(providerUserKey is Guid))
+			if ((null != providerUserKey) && !(providerUserKey is Guid))
 			{
 				status = MembershipCreateStatus.InvalidProviderUserKey;
 				return null;
@@ -692,7 +708,7 @@ namespace NimbleJump.MongoProviders
 
             DateTime createDate = DateTime.UtcNow;
 
-            if (providerUserKey == null)
+            if (null == providerUserKey)
             {
                 providerUserKey = Guid.NewGuid();
             }
@@ -717,8 +733,11 @@ namespace NimbleJump.MongoProviders
             var user = new User();
             user.Id = (Guid)providerUserKey;
             user.Username = username;
+            user.LowercaseUsername = username.ToLowerInvariant();
+            user.DisplayName = username;
             user.ApplicationName = ApplicationName;
             user.Email = email;
+            user.LowercaseEmail = (null == email) ? null : email.ToLowerInvariant();
             user.Password = EncodePassword(password, PasswordFormat, salt);
             user.PasswordQuestion = passwordQuestion;
             user.PasswordAnswer = answer;
@@ -756,13 +775,39 @@ namespace NimbleJump.MongoProviders
             User user = GetUserByName(username, "DeleteUser");
             if (null == user) return false;
 
-            var users = _db.GetCollection<User>(USERS_COLLECTION_NAME);
-            var result = users.Remove(new QueryDocument("Username", username));
+            var users = _db.GetCollection<User>(_collectionName);
+            var query = new QueryDocument();
+            query.Add("lname", username.ToLowerInvariant());
+            query.Add("aname", this.ApplicationName);
+
+            var result = users.Remove(query, SafeMode.True);
             return result.Ok;
         }
 
+
 		/// <summary>
-		/// Gets a collection of membership users where the e-mail address starts with the specified e-mail address to match.
+		/// Gets a collection of membership users where the user name matches the specified string.
+		/// </summary>
+		/// <param name="usernameToMatch">The user name to search for.
+        /// Match string may contain the standard SQL LIKE wildcard: %
+        ///   "sm%"  -> StartsWith("sm")
+        ///   "%ith" -> EndsWith("ith")
+        ///   "%mit%" -> Contains("mit")
+        /// </param>
+		/// <param name="pageIndex">The index of the page of results to return. <paramref name="pageIndex"/> is zero-based.</param>
+		/// <param name="pageSize">The size of the page of results to return.</param>
+		/// <param name="totalRecords">The total number of matched users.</param>
+		/// <returns>
+		/// A <see cref="T:System.Web.Security.MembershipUserCollection"/> collection that contains a page of <paramref name="pageSize"/><see cref="T:System.Web.Security.MembershipUser"/> objects beginning at the page specified by <paramref name="pageIndex"/>.
+		/// </returns>
+        public override MembershipUserCollection FindUsersByName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
+        {
+            return FindUsersBy(FindBy.USERNAME, usernameToMatch, pageIndex, pageSize, out totalRecords);
+        }
+
+
+		/// <summary>
+		/// Gets a collection of membership users where the e-mail address matches the specified string.
 		/// </summary>
 		/// <param name="emailToMatch">The e-mail address to search for.</param>
 		/// <param name="pageIndex">The index of the page of results to return. <paramref name="pageIndex"/> is zero-based.</param>
@@ -773,53 +818,10 @@ namespace NimbleJump.MongoProviders
 		/// </returns>
         public override MembershipUserCollection FindUsersByEmail(string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
-            MembershipUserCollection users = new MembershipUserCollection();
-            var matches = Users.Where(u => u.Email.ToLowerInvariant().StartsWith(emailToMatch))
-                            .Skip(pageIndex * pageSize)
-                            .Take(pageSize)
-                            .ToList();
-
-            if (null == matches)
-            {
-                totalRecords = 0;
-                return users;
-            }
-
-            matches.ForEach(u => users.Add(ToMembershipUser(u)));
-
-            totalRecords = users.Count;
-            return users;
+            return FindUsersBy(FindBy.EMAIL, emailToMatch, pageIndex, pageSize, out totalRecords);
         }
 
-		/// <summary>
-		/// Gets a collection of membership users where the user name starts with the specified user name to match.
-		/// </summary>
-		/// <param name="usernameToMatch">The user name to search for.</param>
-		/// <param name="pageIndex">The index of the page of results to return. <paramref name="pageIndex"/> is zero-based.</param>
-		/// <param name="pageSize">The size of the page of results to return.</param>
-		/// <param name="totalRecords">The total number of matched users.</param>
-		/// <returns>
-		/// A <see cref="T:System.Web.Security.MembershipUserCollection"/> collection that contains a page of <paramref name="pageSize"/><see cref="T:System.Web.Security.MembershipUser"/> objects beginning at the page specified by <paramref name="pageIndex"/>.
-		/// </returns>
-        public override MembershipUserCollection FindUsersByName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
-        {
-            MembershipUserCollection users = new MembershipUserCollection();
-            var matches = Users.Where(u => u.Username.ToLowerInvariant().StartsWith(usernameToMatch))
-                            .Skip(pageIndex * pageSize)
-                            .Take(pageSize)
-                            .ToList();
 
-            if (null == matches)
-            {
-                totalRecords = 0;
-                return users;
-            }
-
-            matches.ForEach(u => users.Add(ToMembershipUser(u)));
-
-            totalRecords = users.Count;
-            return users;
-        }
 
 		/// <summary>
 		/// Gets a collection of all the users in the data source in pages of data.
@@ -843,9 +845,11 @@ namespace NimbleJump.MongoProviders
                 return users;
             }
 
+            // execute second query to get total count
+            totalRecords = Users.Count();
+
             matches.ForEach(u => users.Add(ToMembershipUser(u)));
 
-            totalRecords = users.Count;
             return users;
         }
 
@@ -926,8 +930,29 @@ namespace NimbleJump.MongoProviders
 		/// </returns>
         public override MembershipUser GetUser(string username, bool userIsOnline)
         {
-            User user = Users.Where(u => u.Username.ToLowerInvariant() == username).FirstOrDefault();
-            return ToMembershipUser(user);
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                return null;
+            }
+            if (userIsOnline)
+            {
+                // update the last-activity date
+                var users = _db.GetCollection<User>(_collectionName);
+                var query = Query.EQ("lname", username.ToLowerInvariant());
+                var update = Update.Set("actdate", DateTime.UtcNow);
+                var result = users.FindAndModify(query, SortBy.Null, update, returnNew: true);
+                if (!result.Ok)
+                {
+                    HandleDataExceptionAndThrow(new ProviderException(result.ErrorMessage), "GetUser");
+                }
+                var u = BsonSerializer.Deserialize<User>(result.ModifiedDocument);
+                return ToMembershipUser(u);
+            }
+            else
+            {
+                User user = Users.Where(u => u.LowercaseUsername == username.ToLowerInvariant()).FirstOrDefault();
+                return ToMembershipUser(user);
+            }
         }
 
 		/// <summary>
@@ -940,8 +965,28 @@ namespace NimbleJump.MongoProviders
 		/// </returns>
         public override MembershipUser GetUser(object providerUserKey, bool userIsOnline)
         {
-            User user = Users.Where(u => u.Id == (Guid)providerUserKey).FirstOrDefault();
-            return ToMembershipUser(user);
+            if (!(providerUserKey is Guid)){
+                throw new ArgumentException("Invalid User Id.  Id must be a GUID", "providerUserKey");
+            }
+            if (userIsOnline)
+            {
+                // update the last-activity date
+                var users = _db.GetCollection<User>(_collectionName);
+                var query = Query.EQ("_id", (Guid)providerUserKey);
+                var update = Update.Set("actdate", DateTime.UtcNow);
+                var result = users.FindAndModify(query, SortBy.Null, update, returnNew: true);
+                if (!result.Ok)
+                {
+                    HandleDataExceptionAndThrow(new ProviderException(result.ErrorMessage), "GetUser");
+                }
+                var u = BsonSerializer.Deserialize<User>(result.ModifiedDocument);
+                return ToMembershipUser(u);
+            }
+            else
+            {
+                User user = Users.Where(u => u.Id == (Guid)providerUserKey).FirstOrDefault();
+                return ToMembershipUser(user);
+            }
         }
 
 		/// <summary>
@@ -953,10 +998,10 @@ namespace NimbleJump.MongoProviders
 		/// </returns>
         public override string GetUserNameByEmail(string email)
         {
-			if (email == null)
+			if (null == email)
 				return null;
 
-            var username = Users.Where(u => u.Email.ToLowerInvariant().StartsWith(email)).Select(u => u.Username).FirstOrDefault();
+            var username = Users.Where(u => u.LowercaseEmail == email.ToLowerInvariant()).Select(u => u.Username).FirstOrDefault();
             return username;
         }
 
@@ -999,7 +1044,7 @@ namespace NimbleJump.MongoProviders
             }
 
 
-            if (answer == null && RequiresQuestionAndAnswer)
+            if (null == answer && RequiresQuestionAndAnswer)
             {
                 UpdateFailureCount(user, "passwordAnswer", false);
                 throw new ProviderException("Password answer required for password reset.");
@@ -1077,6 +1122,8 @@ namespace NimbleJump.MongoProviders
             u.Email = user.Email;
             u.Comment = user.Comment;
             u.IsApproved = user.IsApproved;
+            u.LastLoginDate = user.LastLoginDate;
+            u.LastActivityDate = user.LastActivityDate;
 
             {
                 var msg = "Error saving user while attempting to update Email and IsApproved status";
@@ -1109,13 +1156,19 @@ namespace NimbleJump.MongoProviders
             bool passwordsMatch = ComparePasswords(password, user.Password, user.PasswordSalt, user.PasswordFormat);
             if (!passwordsMatch)
             {
+                // update invalid try count
+                UpdateFailureCount(user, "password", isAuthenticated: false);
                 return false;
             }
 
-            // User is authenticated. Update last activity and last login dates.
+            // User is authenticated. Update last activity and last login dates and failure counts.
 
             user.LastActivityDate = DateTime.UtcNow;
             user.LastLoginDate = DateTime.UtcNow;
+            user.FailedPasswordAnswerAttemptCount = 0;
+            user.FailedPasswordAttemptCount = 0;
+            user.FailedPasswordAnswerAttemptWindowStart = DateTime.MinValue;
+            user.FailedPasswordAttemptWindowStart = DateTime.MinValue;
 
             var msg = String.Format("Error updating User '{0}'s last login date while validating", username);
             Save(user, msg, "ValidateUser");
@@ -1130,7 +1183,7 @@ namespace NimbleJump.MongoProviders
         protected void ValidatePwdStrengthRegularExpression()
 		{
 			// Validate regular expression, if supplied.
-			if (_passwordStrengthRegularExpression == null)
+			if (null == _passwordStrengthRegularExpression)
 				_passwordStrengthRegularExpression = String.Empty;
 
 			_passwordStrengthRegularExpression = _passwordStrengthRegularExpression.Trim();
@@ -1183,7 +1236,7 @@ namespace NimbleJump.MongoProviders
 
             try {
                 var users = Users;
-                user = users.AsQueryable().Where(u => u.Username.ToLowerInvariant() == username && u.ApplicationName == ApplicationName).SingleOrDefault();
+                user = users.AsQueryable().Where(u => u.LowercaseUsername == username.ToLowerInvariant() && u.ApplicationName == ApplicationName).SingleOrDefault();
             }
             catch (Exception ex) {
                 var msg = String.Format("Unable to retrieve User information for user '{0}'", username);
@@ -1192,6 +1245,151 @@ namespace NimbleJump.MongoProviders
 
             return user;
         }
+
+
+
+
+        protected enum FindBy
+        {
+            USERNAME,
+            EMAIL
+        }
+
+        /// <summary>
+        /// Filters User list
+        /// </summary>
+        /// <param name="strToMatch">The string to match.
+        /// String may contain the standard SQL LIKE wildcard: %
+        ///   "sm%"  -> StartsWith("sm")
+        ///   "%ith" -> EndsWith("ith")
+        ///   "%mit%" -> Contains("mit")
+        /// </param>
+        /// <param name="findByType"></param>
+        /// <returns>
+        /// A <see cref="System.Linq.IQueryable{T}"/> that contains the filtered <see cref="MongoProviders.User"/> list
+        /// </returns>
+        protected IQueryable<User> FilterUsers(string strToMatch, FindBy findByType)
+        {
+            // Would prefer to do something like:
+            //     Users.Where(u => u.LowercaseUsername.Matches(usernameToMatch))
+            // ... but FluentMongo currently only supports: StartsWith, EndsWith, and Contains
+            // so stuck doing it the brute-force way
+
+            if (String.IsNullOrWhiteSpace(strToMatch)){
+                return null;
+            }
+            string wildcard = null;
+            if (strToMatch.Contains("%")){
+                wildcard = "%";
+            }
+
+            if (null == wildcard) {
+                // do straight equality comparison
+                switch (findByType) {
+                    case FindBy.USERNAME:
+                        return Users.Where(u => u.LowercaseUsername == strToMatch.ToLowerInvariant());
+                    case FindBy.EMAIL:
+                        return Users.Where(u => u.LowercaseEmail == strToMatch.ToLowerInvariant());
+                    default:
+                        var msg = String.Format("Error while trying to find Users '{0}'. FindByType '{1}' not supported by FilterUsers method", strToMatch, findByType.ToString());
+                        throw new ProviderException(msg);
+                }
+            }
+
+
+            // string contains wildcard
+
+            var stripped = strToMatch.ToLowerInvariant().Replace(wildcard,"");
+
+
+            // check for "%mit%" case
+
+            if (strToMatch.StartsWith(wildcard) && strToMatch.EndsWith(wildcard)) {
+                switch (findByType) {
+                    case FindBy.USERNAME:
+                        return Users.Where(u => u.LowercaseUsername.Contains(stripped));
+                    case FindBy.EMAIL:
+                        return Users.Where(u => u.LowercaseEmail.Contains(stripped));
+                    default:
+                        var msg = String.Format("Error while trying to find Users '{0}'. FindByType '{1}' not supported by FilterUsers method", strToMatch, findByType.ToString());
+                        throw new ProviderException(msg);
+                }
+            }
+
+            // check for "Smi%" case
+
+            if (strToMatch.EndsWith(wildcard))
+            {
+                switch (findByType) {
+                    case FindBy.USERNAME:
+                        return Users.Where(u => u.LowercaseUsername.StartsWith(stripped));
+                    case FindBy.EMAIL:
+                        return Users.Where(u => u.LowercaseEmail.StartsWith(stripped));
+                    default:
+                        var msg = String.Format("Error while trying to find Users '{0}'. FindByType '{1}' not supported by FilterUsers method", strToMatch, findByType.ToString());
+                        throw new ProviderException(msg);
+                }
+            }
+
+            // check for "%ith" case
+
+            if (strToMatch.StartsWith(wildcard))
+            {
+                switch (findByType) {
+                    case FindBy.USERNAME:
+                        return Users.Where(u => u.LowercaseUsername.EndsWith(stripped));
+                    case FindBy.EMAIL:
+                        return Users.Where(u => u.LowercaseEmail.EndsWith(stripped));
+                    default:
+                        var msg = String.Format("Error while trying to find Users '{0}'. FindByType '{1}' not supported by FilterUsers method", strToMatch, findByType.ToString());
+                        throw new ProviderException(msg);
+                }
+            }
+
+
+            // contains wildcard but not in a standard position (start or end). Treat as normal equality match.
+
+            switch (findByType) {
+                case FindBy.USERNAME:
+                    return Users.Where(u => u.LowercaseUsername == stripped);
+                case FindBy.EMAIL:
+                    return Users.Where(u => u.LowercaseEmail == stripped);
+                default:
+                    var msg = String.Format("Error while trying to find Users '{0}'. FindByType '{1}' not supported by FilterUsers method", strToMatch, findByType.ToString());
+                    throw new ProviderException(msg);
+            }
+
+        }
+
+        protected MembershipUserCollection FindUsersBy(FindBy findByType, string strToMatch, int pageIndex, int pageSize, out int totalRecords)
+        {
+            MembershipUserCollection users = new MembershipUserCollection();
+            if (String.IsNullOrWhiteSpace(strToMatch))
+            {
+                totalRecords = 0;
+                return users;
+            }
+            var filteredUsers = FilterUsers(strToMatch, findByType);
+            var matches = filteredUsers
+                            .Skip(pageIndex * pageSize)
+                            .Take(pageSize)
+                            .ToList();
+
+            if (null == matches)
+            {
+                totalRecords = 0;
+                return users;
+            }
+
+            // execute second query to get total count
+            totalRecords = filteredUsers.Count();
+
+            matches.ForEach(u => users.Add(ToMembershipUser(u)));
+
+            return users;
+        }
+
+
 
 
 		protected bool CheckPassword(User user, string password, bool failIfNotApproved)
@@ -1375,7 +1573,7 @@ namespace NimbleJump.MongoProviders
 					break;
 				case MembershipPasswordFormat.Hashed:
 					HashAlgorithm algorithm = HashAlgorithm.Create(Membership.HashAlgorithmType);
-					if (algorithm == null)
+					if (null == algorithm)
 					{
 						throw new ProviderException(String.Concat("MongoMembershipProvider configuration error: HashAlgorithm.Create() does not recognize the hash algorithm ", Membership.HashAlgorithmType, "."));
 					}
@@ -1400,7 +1598,7 @@ namespace NimbleJump.MongoProviders
 					break;
 				case MembershipPasswordFormat.Encrypted:
 					byte[] bytes = base.DecryptPassword(Convert.FromBase64String(password));
-					if (bytes == null)
+					if (null == bytes)
 					{
 						password = null;
 					}
@@ -1462,12 +1660,21 @@ namespace NimbleJump.MongoProviders
         /// <param name="action">The name of the action which attempted the save (ex. "CreateUser"). Used in case exceptions are written to EventLog.</param>
         protected void Save(User user, string failureMessage, string action)
         {
+            SafeModeResult result = null;
             try {
-                var users = _db.GetCollection<User>(USERS_COLLECTION_NAME);
-                users.Save(user);
+                var users = _db.GetCollection<User>(_collectionName);
+                result = users.Save(user, SafeMode.True);
             }
             catch (Exception ex) {
                 HandleDataExceptionAndThrow(new ProviderException(failureMessage, ex), action);
+            }
+            if (null == result)
+            {
+                HandleDataExceptionAndThrow(new ProviderException("Save to database did not return a status result"), action);
+            }
+            else if (!result.Ok)
+            {
+                HandleDataExceptionAndThrow(new ProviderException(result.LastErrorMessage), action);
             }
         }
 
@@ -1498,7 +1705,7 @@ namespace NimbleJump.MongoProviders
 		/// <remarks>This method performs the same implementation as Microsoft's version at System.Web.Util.SecUtility.</remarks>
 		internal static void CheckParameter(ref string param, bool checkForNull, bool checkIfEmpty, bool checkForCommas, int maxSize, string paramName)
 		{
-			if (param == null)
+            if (null == param)
 			{
 				if (checkForNull)
 				{
@@ -1534,7 +1741,7 @@ namespace NimbleJump.MongoProviders
 		/// <returns>Returns <c>true</c> if all requirements are met; otherwise returns <c>false</c>.</returns>
 		internal static bool ValidateParameter(ref string param, bool checkForNull, bool checkIfEmpty, bool checkForCommas, int maxSize)
 		{
-			if (param == null)
+            if (null == param)
 			{
 				return !checkForNull;
 			}

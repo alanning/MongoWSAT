@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Web.Security;
 
-namespace NimbleJump.MongoProviders
+namespace MongoProviders
 {
     [Serializable]
     public class User {
 
 		public Guid Id { get; set; }
 		public string Username { get; set; }
+		public string LowercaseUsername { get; set; }
 		public string ApplicationName { get; set; }
 		public string Email { get; set; }
+		public string LowercaseEmail { get; set; }
         public string DisplayName { get; set; }
 		public string Comment { get; set; }
 		public string Password { get; set; }
@@ -22,7 +24,6 @@ namespace NimbleJump.MongoProviders
 		public DateTime LastLoginDate { get; set; }
 		public DateTime LastPasswordChangedDate { get; set; }
 		public DateTime CreateDate { get; set; }
-		public bool IsOnLine { get; set; }
 		public bool IsLockedOut { get; set; }
 		public DateTime LastLockedOutDate { get; set; }
 		public int FailedPasswordAttemptCount { get; set; }
