@@ -14,7 +14,8 @@ License:
 
 The WSAT code is largely unchanged from Hunzonian's original version and retains the original LGPL license.
 
-* NOTE: The MongoProviders.UnitTests project is GPL since it is a port of the Unit Tests from the MySQL Connector project (GPL).
+* GPL NOTICE * 
+The MongoProviders.UnitTests project is GPL since it is a port of the Unit Tests from the MySQL Connector project (GPL).
 The reason the rest of this project can remain non-GPL'd is due to the FOSS exception as described here:
 http://www.mysql.com/about/legal/licensing/foss-exception/
 If you are going to include MongoWSAT in a non-open source project then you _must_ remove the MongoProviders.UnitTests project to remain compliant with the MySQL Connector license.
@@ -27,11 +28,12 @@ Dependencies:
 All dependencies are included but you may wish to refresh with NuGet to get the latest versions.
 MongoDB CSharp Driver - http://www.mongodb.org/display/DOCS/CSharp+Language+Center
 FluentMongo - https://github.com/craiggwilson/fluent-mongo
+NUnit (for MongoProvider Unit Tests) - NuGet
 
 
 References:
 
-Many websites were consulted when making this but here are some of the most relevant:
+Many projects were referenced when making this but here are some of the most relevant:
 
 	SQL Membership, Role, Profile Provider Source Code
 	http://download.microsoft.com/download/a/b/3/ab3c284b-dc9a-473d-b7e3-33bacfcc8e98/ProviderToolkitSamples.msi
