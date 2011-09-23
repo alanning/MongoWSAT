@@ -43,7 +43,7 @@ namespace MongoProviders.UnitTests
     {
 
         private MongoProviders.MembershipProvider membershipProvider;
-        private RoleProvider_Accessor roleProvider;
+        private MongoProviders.RoleProvider roleProvider;
 
         [SetUp]
 		public override void Setup()
@@ -57,7 +57,7 @@ namespace MongoProviders.UnitTests
 			config.Add("applicationName", _applicationName);
 			membershipProvider.Initialize(null, config);
 
-            roleProvider = new RoleProvider_Accessor();
+            roleProvider = new RoleProvider();
             config = new NameValueCollection();
 			config.Add("connectionStringName", "local");
 			config.Add("applicationName", _applicationName);
@@ -65,52 +65,7 @@ namespace MongoProviders.UnitTests
 		}
 
 
-        [Test]
-        public void CheckIsUserInRoleForNonExistantUser()
-        {
-            var actual = roleProvider.IsUserInRole("not-there", "admin");
-            Assert.AreEqual(false, actual);
-        }
-
         /*
-        [TestMethod()]
-        public void RoleProviderConstructorTest()
-        {
-            RoleProvider target = new RoleProvider();
-            Assert.Inconclusive("TODO: Implement code to verify target");
-        }
-
-        [TestMethod()]
-        public void AddUsersToRolesTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string[] usernames = null; // TODO: Initialize to an appropriate value
-            string[] roleNames = null; // TODO: Initialize to an appropriate value
-            target.AddUsersToRoles(usernames, roleNames);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        [TestMethod()]
-        public void CreateRoleTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string roleName = string.Empty; // TODO: Initialize to an appropriate value
-            target.CreateRole(roleName);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        [TestMethod()]
-        public void DeleteRoleTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string roleName = string.Empty; // TODO: Initialize to an appropriate value
-            bool throwOnPopulatedRole = false; // TODO: Initialize to an appropriate value
-            bool expected = false; // TODO: Initialize to an appropriate value
-            bool actual;
-            actual = target.DeleteRole(roleName, throwOnPopulatedRole);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
 
         [TestMethod()]
         public void FindUsersInRoleTest()
@@ -202,7 +157,7 @@ namespace MongoProviders.UnitTests
         [Test]
         public void CreateAndDeleteRoles()
         {
-            roleProvider = new RoleProvider_Accessor();
+            roleProvider = new RoleProvider();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
             config.Add("applicationName", _applicationName);
@@ -232,7 +187,7 @@ namespace MongoProviders.UnitTests
         [Test]
         public void AddUsersToRoles()
         {
-            roleProvider = new RoleProvider_Accessor();
+            roleProvider = new RoleProvider();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
             config.Add("applicationName", _applicationName);
@@ -263,7 +218,7 @@ namespace MongoProviders.UnitTests
         [Test]
         public void RemoveUsersFromRoles()
         {
-            roleProvider = new RoleProvider_Accessor();
+            roleProvider = new RoleProvider();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
             config.Add("applicationName", _applicationName);
@@ -329,7 +284,7 @@ namespace MongoProviders.UnitTests
         [Test]
         public void AddNonExistingUserToRole()
         {
-            roleProvider = new RoleProvider_Accessor();
+            roleProvider = new RoleProvider();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
             config.Add("applicationName", _applicationName);
@@ -361,7 +316,7 @@ namespace MongoProviders.UnitTests
         [Test]
         public void IllegalRoleAndUserNames()
         {
-            roleProvider = new RoleProvider_Accessor();
+            roleProvider = new RoleProvider();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
             config.Add("applicationName", _applicationName);
@@ -387,6 +342,14 @@ namespace MongoProviders.UnitTests
             Assert.IsTrue(Roles.IsUserInRole("eve", "Administrator"));
         }
 
+
+        [Test]
+        public void CheckIsUserInRoleForNonExistantUser()
+        {
+            var actual = roleProvider.IsUserInRole("not-there", "admin");
+            Assert.AreEqual(false, actual);
+        }
+
         [Test]
         public void IsUserInRoleCrossDomain()
         {
@@ -408,7 +371,7 @@ namespace MongoProviders.UnitTests
             config2.Add("passwordFormat", "Clear");
             provider2.Initialize(null, config2);
 
-            roleProvider = new RoleProvider_Accessor();
+            roleProvider = new RoleProvider();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
             config.Add("applicationName", _applicationName);

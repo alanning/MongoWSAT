@@ -32,7 +32,7 @@ namespace MongoProviders.UnitTests
 
         protected void DropCollections()
         {
-            var roleProvider = new RoleProvider_Accessor();
+            var roleProvider = new RoleProvider();
 
             // roles
             var colName = roleProvider.GenerateCollectionName(_applicationName, RoleProvider.DEFAULT_ROLE_COLLECTION_SUFFIX);

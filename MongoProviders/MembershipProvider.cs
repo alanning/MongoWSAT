@@ -87,6 +87,25 @@ namespace MongoProviders
             }
         }
 
+        public string GenerateCollectionName (string application, string collection)
+        {
+            if (String.IsNullOrWhiteSpace(application))
+                return collection;
+
+            if (application.EndsWith("/"))
+                return application + collection;
+            else
+                return application + "/" + collection;
+        }
+
+        public string CollectionName
+        {
+            get
+            {
+                return _collectionName;
+            }
+        }
+
         #endregion
 
 
@@ -125,17 +144,6 @@ namespace MongoProviders
             }
         }
 
-
-        protected string GenerateCollectionName (string application, string collection)
-        {
-            if (String.IsNullOrWhiteSpace(application))
-                return collection;
-
-            if (application.EndsWith("/"))
-                return application + collection;
-            else
-                return application + "/" + collection;
-        }
 
         #endregion
 

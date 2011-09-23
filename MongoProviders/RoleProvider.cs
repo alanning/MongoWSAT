@@ -76,7 +76,7 @@ namespace MongoProviders
             }
         }
 
-        protected string GenerateCollectionName (string application, string collection)
+        public string GenerateCollectionName (string application, string collection)
         {
             if (String.IsNullOrWhiteSpace(application))
                 return collection;
@@ -85,6 +85,20 @@ namespace MongoProviders
                 return application + collection;
             else
                 return application + "/" + collection;
+        }
+        public string RoleCollectionName
+        {
+            get
+            {
+                return _roleCollectionName;
+            }
+        }
+        public string UserCollectionName
+        {
+            get
+            {
+                return _userCollectionName;
+            }
         }
 
 		/// <summary>
@@ -123,16 +137,6 @@ namespace MongoProviders
             set { _invalidRoleCharacters = value; }
         }
 
-        protected string UserCollectionName
-        {
-            get { return _userCollectionName; }
-            set { _userCollectionName = value; }
-        }
-        protected string RoleCollectionName
-        {
-            get { return _roleCollectionName; }
-            set { _roleCollectionName = value; }
-        }
 
         protected IQueryable<User> _users;
 

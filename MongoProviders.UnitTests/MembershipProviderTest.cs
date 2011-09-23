@@ -29,23 +29,23 @@
 using NUnit.Framework;
 using System.Web.Security;
 using System.Collections.Specialized;
-using System.Data;
 using System;
 using System.Linq;
 using System.Configuration.Provider;
+using MongoDB.Driver.Builders;
 
 namespace MongoProviders.UnitTests
 {
     [TestFixture]
     public class MembershipProviderTest : BaseTest
     {
-        protected MembershipProvider_Accessor provider;
+        protected MembershipProvider provider;
 
         [SetUp]
 		public override void Setup()
 		{
             base.Setup();
-            provider = new MembershipProvider_Accessor();
+            provider = new MembershipProvider();
 		}
 
         private void CreateUserWithFormat(MembershipPasswordFormat format)
@@ -63,7 +63,7 @@ namespace MongoProviders.UnitTests
             Assert.AreEqual(MembershipCreateStatus.Success, status);
 
             // verify that the password format was saved
-            var user = provider.GetUserByName("foo", "");
+            var user = _db.GetCollection<User>(provider.CollectionName).FindOne(Query.EQ("lname", "foo"));
             MembershipPasswordFormat rowFormat = user.PasswordFormat;
             Assert.AreEqual(format, rowFormat);
 
@@ -254,16 +254,16 @@ namespace MongoProviders.UnitTests
         {
             CreateUserWithHashedPassword();
             Assert.IsTrue(provider.DeleteUser("foo", true));
-            var count = _db.GetCollection<User>(provider._collectionName).Count();
+            var count = _db.GetCollection<User>(provider.CollectionName).Count();
             Assert.AreEqual(0, count);
 
-            provider = new MembershipProvider_Accessor();
+            provider = new MembershipProvider();
             CreateUserWithHashedPassword();
 
             // in Mongo, all associated data is stored in same document so 
             // passing true or false to DeleteUser will be the same.
             Assert.IsTrue(provider.DeleteUser("foo", deleteAllRelatedData: true));
-            count = _db.GetCollection<User>(provider._collectionName).Count();
+            count = _db.GetCollection<User>(provider.CollectionName).Count();
             Assert.AreEqual(0, count);
             //Assert.IsTrue(Membership.DeleteUser("foo", false));
             //table = FillTable("SELECT * FROM my_aspnet_Membership");
@@ -462,7 +462,7 @@ namespace MongoProviders.UnitTests
         private void GetPasswordHelper(bool requireQA, bool enablePasswordRetrieval, string answer)
         {
             MembershipCreateStatus status;
-            provider = new MembershipProvider_Accessor();
+            provider = new MembershipProvider();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
             config.Add("requiresQuestionAndAnswer", requireQA ? "true" : "false");
