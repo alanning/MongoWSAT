@@ -26,6 +26,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Web.Security;
 using System.Collections.Specialized;
 using System.Configuration.Provider;
@@ -80,28 +81,6 @@ namespace MongoProviders.UnitTests
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
 
-        [TestMethod()]
-        public void GetAllRolesTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string[] expected = null; // TODO: Initialize to an appropriate value
-            string[] actual;
-            actual = target.GetAllRoles();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
-
-        [TestMethod()]
-        public void GetRolesForUserTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string username = string.Empty; // TODO: Initialize to an appropriate value
-            string[] expected = null; // TODO: Initialize to an appropriate value
-            string[] actual;
-            actual = target.GetRolesForUser(username);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
 
         [TestMethod()]
         public void GetUsersInRoleTest()
@@ -115,28 +94,7 @@ namespace MongoProviders.UnitTests
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
 
-        [TestMethod()]
-        public void IsUserInRoleTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string username = string.Empty; // TODO: Initialize to an appropriate value
-            string roleName = string.Empty; // TODO: Initialize to an appropriate value
-            bool expected = false; // TODO: Initialize to an appropriate value
-            bool actual;
-            actual = target.IsUserInRole(username, roleName);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
 
-        [TestMethod()]
-        public void RemoveUsersFromRolesTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string[] usernames = null; // TODO: Initialize to an appropriate value
-            string[] roleNames = null; // TODO: Initialize to an appropriate value
-            target.RemoveUsersFromRoles(usernames, roleNames);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
 
         [TestMethod()]
         public void RoleExistsTest()
@@ -342,6 +300,48 @@ namespace MongoProviders.UnitTests
             Assert.IsTrue(Roles.IsUserInRole("eve", "Administrator"));
         }
 
+        [Test]
+        public void GetRolesForUserTest()
+        {
+            roleProvider = new RoleProvider();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "local");
+            config.Add("applicationName", _applicationName);
+            roleProvider.Initialize(null, config);
+
+            AddUser("eve", "eveeve!");
+            roleProvider.CreateRole("Administrator");
+            roleProvider.CreateRole("User");
+            roleProvider.CreateRole("Editor");
+
+            roleProvider.AddUsersToRoles(new string[] { "eve" },
+                new string[] { "Editor", "User", "Administrator"});
+            Assert.AreEqual(3, roleProvider.GetRolesForUser("eve").Length);
+            Assert.IsTrue(roleProvider.IsUserInRole("eve", "Editor"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve", "User"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve", "Administrator"));
+        }
+
+        [Test]
+        public void GetAllRolesTest()
+        {
+            roleProvider = new RoleProvider();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "local");
+            config.Add("applicationName", _applicationName);
+            roleProvider.Initialize(null, config);
+
+            roleProvider.CreateRole("Administrator");
+            roleProvider.CreateRole("User");
+            roleProvider.CreateRole("Editor");
+
+
+            var roles = roleProvider.GetAllRoles();
+            Assert.AreEqual(3, roles.Length);
+            Assert.IsTrue(roles.Contains("Administrator"));
+            Assert.IsTrue(roles.Contains("User"));
+            Assert.IsTrue(roles.Contains("Editor"));
+        }
 
         [Test]
         public void CheckIsUserInRoleForNonExistantUser()
