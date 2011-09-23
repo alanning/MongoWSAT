@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Security;
+using System.Collections.Generic;
 
 namespace MongoProviders
 {
@@ -30,6 +31,13 @@ namespace MongoProviders
 		public DateTime FailedPasswordAttemptWindowStart { get; set; }
 		public int FailedPasswordAnswerAttemptCount { get; set; }
 		public DateTime FailedPasswordAnswerAttemptWindowStart { get; set; }
+        public List<string> Roles { get; set; }
+
+        public User()
+        {
+            Roles = new List<string>();
+            //Roles.Add("test");
+        }
 
 		public override string ToString()
 		{

@@ -21,28 +21,152 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
 using System.Collections.Specialized;
+using System.Configuration;
+using System.Configuration.Provider;
+using MongoDB.Driver;
+using System.Web.Configuration;
+using FluentMongo.Linq;
+using MongoDB.Driver.Builders;
+using MongoDB.Bson;
 
 namespace MongoProviders
 {
+    /// <summary>
+    /// Role Provider Conventions:
+    ///   Role Collection Name:
+    ///     If 'roleCollectionName' is not specified, it will default to 'roles-{appname}'
+    ///       where {appname} is the ApplicationName.  If ApplicationName is later changed, 
+    ///       the referenced roleCollectionName will also be updated (but only if it was 
+    ///       not manually specified).
+    ///
+    ///     Role Collection documents consist only of and Id which is the roleName.
+    ///       Ex: { _id:"Admin" }
+    ///
+    /// </summary>
     public class RoleProvider : System.Web.Security.RoleProvider
     {
-        public const string DEFAULT_ROLE_COLLECTION_NAME = "roles";
         public const string DEFAULT_NAME = "MongoRoleProvider";
+        public const string DEFAULT_DATABASE_NAME = "test";
+        public const string DEFAULT_ROLE_COLLECTION_SUFFIX = "roles";
+        public const string DEFAULT_USER_COLLECTION_SUFFIX = MongoProviders.MembershipProvider.DEFAULT_USER_COLLECTION_SUFFIX;
+        public const string DEFAULT_INVALID_CHARACTERS = ",%";
+		public const int MAX_USERNAME_LENGTH = 256;
+		public const int MAX_ROLE_LENGTH = 256;
 
-        public override string ApplicationName
+        protected string _connectionString;
+        protected MachineKeySection _machineKey;
+        protected string _databaseName;
+        protected string _userCollectionName;
+        protected string _roleCollectionName;
+
+        protected MongoServer _server;
+        protected MongoDatabase _db;
+
+        protected string _applicationName;
+        protected string _invalidUsernameCharacters;
+        protected string _invalidRoleCharacters;
+        protected bool _defaultRoleCollection;
+        protected bool _defaultUserCollection;
+
+        public string DefaultCollectionName
         {
             get
             {
-                throw new NotImplementedException();
+                return GenerateCollectionName(_applicationName, DEFAULT_ROLE_COLLECTION_SUFFIX);
             }
+        }
+
+        protected string GenerateCollectionName (string application, string collection)
+        {
+            if (String.IsNullOrWhiteSpace(application))
+                return collection;
+
+            if (application.EndsWith("/"))
+                return application + collection;
+            else
+                return application + "/" + collection;
+        }
+
+		/// <summary>
+		/// The name of the application using the custom membership provider.
+		/// </summary>
+		/// <value></value>
+		/// <returns>
+		/// The name of the application using the custom membership provider.
+		/// </returns>
+        public override string ApplicationName
+        {
+            get { return _applicationName; }
             set
             {
-                throw new NotImplementedException();
+                _applicationName = value;
+                if (_defaultRoleCollection)
+                {
+                    _roleCollectionName = DefaultCollectionName;
+                }
+                if (_defaultUserCollection)
+                {
+                    _userCollectionName = GenerateCollectionName(_applicationName, DEFAULT_USER_COLLECTION_SUFFIX);
+                    _users = null;  // so it will get refreshed with new collection name
+                }
+            }
+        }
+
+        protected string InvalidUsernameCharacters
+        {
+            get { return _invalidUsernameCharacters; }
+            set { _invalidUsernameCharacters = value; }
+        }
+        protected string InvalidRoleCharacters
+        {
+            get { return _invalidRoleCharacters; }
+            set { _invalidRoleCharacters = value; }
+        }
+
+        protected string UserCollectionName
+        {
+            get { return _userCollectionName; }
+            set { _userCollectionName = value; }
+        }
+        protected string RoleCollectionName
+        {
+            get { return _roleCollectionName; }
+            set { _roleCollectionName = value; }
+        }
+
+        protected IQueryable<User> _users;
+
+        /// <summary>
+        /// A IQueryable list of Users for this Application (User.ApplicationName == this.ApplicationName)
+        /// </summary>
+        protected IQueryable<User> Users
+        {
+            get
+            {
+                if (null == _users)
+                {
+                    _users = _db.GetCollection<User>(_userCollectionName).AsQueryable();
+                }
+
+                return _users;
             }
         }
 
 
-        /*
+        /// <summary>
+        /// The list of Roles for this Application
+        /// </summary>
+        protected IEnumerable<string> Roles 
+        {
+            get
+            {
+                // Loading of the users collection is delayed until the collection is actually accessed
+                var docs = _db.GetCollection(_roleCollectionName).FindAll();
+                var ids = docs.Select(d => d["_id"].AsString);
+                return ids;
+            }
+        }
+
 
         public override void Initialize(string name, NameValueCollection config){
 
@@ -50,61 +174,136 @@ namespace MongoProviders
                throw new ArgumentNullException("config");
 
             if (String.IsNullOrEmpty(name))
-                name = "SqlRoleProvider";
-            if (string.IsNullOrEmpty(config["description"])) {
+                name = DEFAULT_NAME;
+
+            if (String.IsNullOrEmpty(config["description"])) {
                 config.Remove("description");
-                config.Add("description", SR.GetString(SR.RoleSqlProvider_description));
+                config.Add("description", Resources.RoleProvider_description);
             }
             base.Initialize(name, config);
 
-            _SchemaVersionCheck = 0;
 
-            _CommandTimeout = SecUtility.GetIntValue( config, "commandTimeout", 30, true, 0 );
+            _applicationName = GetConfigValue(config["applicationName"], System.Web.Hosting.HostingEnvironment.ApplicationVirtualPath);
+            _invalidUsernameCharacters = GetConfigValue(config["invalidUsernameCharacters"], DEFAULT_INVALID_CHARACTERS);
+            _invalidRoleCharacters = GetConfigValue(config["invalidRoleCharacters"], DEFAULT_INVALID_CHARACTERS);
+            _databaseName = GetConfigValue(config["databaseName"], DEFAULT_DATABASE_NAME);
+            _userCollectionName = GetConfigValue(config["userCollectionName"], GenerateCollectionName(_applicationName, DEFAULT_USER_COLLECTION_SUFFIX));
+            _roleCollectionName = GetConfigValue(config["roleCollectionName"], DefaultCollectionName);
+
+            // set default collection flag
+            _defaultRoleCollection = !config.AllKeys.Contains("roleCollectionName");
+            _defaultUserCollection = !config.AllKeys.Contains("userCollectionName");
+
+
+            // Initialize Connection String
 
             string temp = config["connectionStringName"];
-            if (temp == null || temp.Length < 1)
-                throw new ProviderException(SR.GetString(SR.Connection_name_not_specified));
-            _sqlConnectionString = SqlConnectionHelper.GetConnectionString(temp, true, true);
-            if (_sqlConnectionString == null || _sqlConnectionString.Length < 1) {
-                throw new ProviderException(SR.GetString(SR.Connection_string_not_found, temp));
-            }
+            if (String.IsNullOrWhiteSpace(temp))
+                throw new ProviderException(Resources.Connection_name_not_specified);
 
-            _AppName = config["applicationName"];
-            if (string.IsNullOrEmpty(_AppName))
-                _AppName = SecUtility.GetDefaultAppName();
+            ConnectionStringSettings ConnectionStringSettings = ConfigurationManager.ConnectionStrings[temp];
+            if (null == ConnectionStringSettings || String.IsNullOrWhiteSpace(ConnectionStringSettings.ConnectionString))
+                throw new ProviderException(String.Format(Resources.Connection_string_not_found, temp));
 
-            if( _AppName.Length > 256 )
-            {
-                throw new ProviderException(SR.GetString(SR.Provider_application_name_too_long));
-            }
+			_connectionString = ConnectionStringSettings.ConnectionString;
 
-            config.Remove("connectionStringName");
+
+            // Check for unrecognized config values
+
             config.Remove("applicationName");
-            config.Remove("commandTimeout");
+            config.Remove("connectionStringName");
+            config.Remove("invalidUsernameCharacters"); 
+            config.Remove("invalidRoleCharacters"); 
+            config.Remove("databaseName");
+            config.Remove("roleCollectionName");
+            config.Remove("userCollectionName");
+
             if (config.Count > 0)
             {
-                string attribUnrecognized = config.GetKey(0);
-                if (!String.IsNullOrEmpty(attribUnrecognized))
-                    throw new ProviderException(SR.GetString(SR.Provider_unrecognized_attribute, attribUnrecognized));
+                string key = config.GetKey(0);
+                if (!String.IsNullOrEmpty(key))
+                    throw new ProviderException(String.Format(Resources.Provider_unrecognized_attribute, key));
             }
+
+
+            //RoleClassMap.Register();
+
+            // Initialize MongoDB Server
+            _server = MongoServer.Create(_connectionString);
+            _db = _server.GetDatabase(_databaseName);
+
         }
         
-        */
+        protected T GetConfigValue<T>(string configValue, T defaultValue)
+        {
+            if (String.IsNullOrEmpty(configValue))
+                return defaultValue;
+
+            return ((T)Convert.ChangeType(configValue, typeof(T)));
+        }
+
 
 
         public override void AddUsersToRoles(string[] usernames, string[] roleNames)
         {
-            throw new NotImplementedException();
+            SecUtility.CheckArrayParameter(ref usernames, true, true, InvalidUsernameCharacters, MAX_USERNAME_LENGTH, "usernames");
+
+            // Roles are checked in CreateRole
+            //SecUtility.CheckArrayParameter(ref roleNames, true, true, InvalidRoleCharacters, MAX_ROLE_LENGTH, "roleNames");
+
+
+            // first add any non-existant roles to roles collection
+            
+            // a) pull all roles, filter out existing, push new
+            //    ...or 
+            // b) save all passed in roles 
+
+            foreach (var role in roleNames)
+            {
+                CreateRole(role);
+            }
+
+
+            // now update all users' roles
+
+            // http://www.pastie.org/2225343
+
+            var query = Query.In("uname", new BsonArray(usernames));
+
+            var update = Update.AddToSetEachWrapped<string>("roles", roleNames);
+
+            var result = _db.GetCollection<User>(_userCollectionName).Update(query, update, UpdateFlags.Multi, SafeMode.True);
+            if (result.HasLastErrorMessage)
+            {
+                throw new ProviderException(result.LastErrorMessage);
+            }
         }
 
         public override void CreateRole(string roleName)
         {
-            throw new NotImplementedException();
+            SecUtility.CheckParameter(ref roleName, true, true, InvalidRoleCharacters, MAX_ROLE_LENGTH, "roleName");
+
+            var doc = new BsonDocument();
+            doc.SetDocumentId(roleName);
+            var result = _db.GetCollection(_roleCollectionName).Save(doc, SafeMode.True);
+            if (!result.Ok)
+            {
+                throw new ProviderException(String.Format("Could not create role '{0}'. Reason: {1}", roleName, result.LastErrorMessage));
+            }
         }
 
         public override bool DeleteRole(string roleName, bool throwOnPopulatedRole)
         {
-            throw new NotImplementedException();
+            SecUtility.CheckParameter(ref roleName, true, true, InvalidRoleCharacters, MAX_ROLE_LENGTH, "roleName");
+
+            var rolePopulated = Users.Where(u => u.Roles.Contains(roleName)).Any();
+            if (throwOnPopulatedRole && rolePopulated)
+            {
+                throw new ProviderException(Resources.Role_is_not_empty);
+            }
+
+            var result = _db.GetCollection<string>(_roleCollectionName).Remove(Query.EQ("_id", roleName), SafeMode.True);
+            return result.Ok;
         }
 
         public override string[] FindUsersInRole(string roleName, string usernameToMatch)
@@ -114,32 +313,58 @@ namespace MongoProviders
 
         public override string[] GetAllRoles()
         {
-            throw new NotImplementedException();
+            return Roles.ToArray();
         }
 
         public override string[] GetRolesForUser(string username)
         {
-            throw new NotImplementedException();
+			SecUtility.CheckParameter(ref username, true, true, InvalidUsernameCharacters, MAX_USERNAME_LENGTH, "username");
+
+            string[] roles = Users.Where(u => u.LowercaseUsername == username.ToLowerInvariant()).Select(u => u.Roles.ToArray()).FirstOrDefault();
+
+            return roles;
         }
 
         public override string[] GetUsersInRole(string roleName)
         {
-            throw new NotImplementedException();
+            SecUtility.CheckParameter(ref roleName, true, true, InvalidRoleCharacters, MAX_ROLE_LENGTH, "roleName");
+
+            var usernames = Users.Where(u => u.Roles.Contains(roleName)).Select(u => u.Username).ToArray();
+
+            return usernames;
         }
 
         public override bool IsUserInRole(string username, string roleName)
         {
-            throw new NotImplementedException();
+			SecUtility.CheckParameter(ref roleName, true, true, null, MAX_ROLE_LENGTH, "roleName");
+
+            var found = Users.Where(u => u.LowercaseUsername == username.ToLowerInvariant() &&
+                                         u.Roles.Contains(roleName) ).Any();
+            return found;
         }
 
         public override void RemoveUsersFromRoles(string[] usernames, string[] roleNames)
         {
-            throw new NotImplementedException();
+            SecUtility.CheckArrayParameter(ref usernames, true, true, InvalidUsernameCharacters, MAX_USERNAME_LENGTH, "usernames");
+            SecUtility.CheckArrayParameter(ref roleNames, true, true, InvalidRoleCharacters, MAX_ROLE_LENGTH, "roleNames");
+
+            // update all users' roles
+
+            var query = Query.In("uname", new BsonArray(usernames));
+
+            var update = Update.PullAllWrapped<string>("roles", roleNames);
+
+            var result = _db.GetCollection<User>(_userCollectionName).Update(query, update, UpdateFlags.Multi, SafeMode.True);
+            if (result.HasLastErrorMessage)
+            {
+                throw new ProviderException(result.LastErrorMessage);
+            }
+
         }
 
         public override bool RoleExists(string roleName)
         {
-            throw new NotImplementedException();
+            return Roles.Contains(roleName);
         }
     }
 }

@@ -45,8 +45,8 @@ namespace MongoProviders
         #region Custom Public Properties
 
         public const string DEFAULT_NAME = "MongoMembershipProvider";
-        public const string DEFAULT_DATABASE_NAME = "userdb";
-        public const string DEFAULT_USER_COLLECTION_NAME = "users";
+        public const string DEFAULT_DATABASE_NAME = "test";
+        public const string DEFAULT_USER_COLLECTION_SUFFIX = "users";
         public const string DEFAULT_INVALID_CHARACTERS = ",%";
 		public const int NEW_PASSWORD_LENGTH = 8;
 		public const int MAX_USERNAME_LENGTH = 256;
@@ -79,22 +79,30 @@ namespace MongoProviders
                 return _invalidEmailCharacters;
             }
         }
+        public string DefaultCollectionName
+        {
+            get
+            {
+                return GenerateCollectionName(_applicationName, DEFAULT_USER_COLLECTION_SUFFIX);
+            }
+        }
+
         #endregion
 
 
         #region Protected Properties
 
-        protected int _newPasswordLength = 8;
-        protected string _eventSource = DEFAULT_NAME;
-        protected string _eventLog = "Application";
-        protected string _exceptionMessage = Resources.ProviderException;
         protected string _connectionString;
         protected MachineKeySection _machineKey;
         protected string _databaseName;
         protected string _collectionName;
-
         protected MongoServer _server;
         protected MongoDatabase _db;
+
+        protected int _newPasswordLength = 8;
+        protected string _eventSource = DEFAULT_NAME;
+        protected string _eventLog = "Application";
+        protected string _exceptionMessage = Resources.ProviderException;
         protected IQueryable<User> _users;
 
         protected bool _writeExceptionsToEventLog;
@@ -102,7 +110,7 @@ namespace MongoProviders
         protected string _invalidEmailCharacters;
 
         /// <summary>
-        /// A IQueryable list of Users for this Application (User.ApplicationName == this.ApplicationName)
+        /// A IQueryable list of Users for this Application
         /// </summary>
         protected IQueryable<User> Users
         {
@@ -110,21 +118,23 @@ namespace MongoProviders
             {
                 if (null == _users)
                 {
-                    // Loading of the users collection is delayed until the collection is actually accessed so
-                    // error handling is generally not needed but here in case implementation details change.
-                    try
-                    {
-                        _users = _db.GetCollection<User>(_collectionName).AsQueryable().Where(u => u.ApplicationName == this.ApplicationName);
-                    }
-                    catch (Exception ex)
-                    {
-                        var msg = "Unable to retrieve User list";
-                        HandleDataExceptionAndThrow(new ProviderException(msg, ex), "Users");
-                    }
+                    _users = _db.GetCollection<User>(_collectionName).AsQueryable();
                 }
 
                 return _users;
             }
+        }
+
+
+        protected string GenerateCollectionName (string application, string collection)
+        {
+            if (String.IsNullOrWhiteSpace(application))
+                return collection;
+
+            if (application.EndsWith("/"))
+                return application + collection;
+            else
+                return application + "/" + collection;
         }
 
         #endregion
@@ -145,6 +155,7 @@ namespace MongoProviders
         protected int _minRequiredNonAlphanumericCharacters;
         protected int _minRequiredPasswordLength;
         protected string _passwordStrengthRegularExpression;
+        protected bool _usingDefaultCollectionName;
 
 		/// <summary>
 		/// The name of the application using the custom membership provider.
@@ -156,7 +167,15 @@ namespace MongoProviders
         public override string ApplicationName
         {
             get { return _applicationName; }
-            set { _applicationName = value; }
+            set
+            {
+                _applicationName = value;
+                if (_usingDefaultCollectionName)
+                {
+                    _collectionName = DefaultCollectionName;
+                    _users = null;  // so it will get refreshed with new collection name
+                }
+            }
         }
 
 		/// <summary>
@@ -303,7 +322,7 @@ namespace MongoProviders
             if (null == config)
                 throw new ArgumentNullException("config");
 
-            if (null == name || 0 == name.Length)
+            if (String.IsNullOrWhiteSpace(name))
                 name = DEFAULT_NAME;
 
             if (String.IsNullOrEmpty(config["description"]))
@@ -330,7 +349,9 @@ namespace MongoProviders
             _invalidEmailCharacters = GetConfigValue(config["invalidEmailCharacters"], DEFAULT_INVALID_CHARACTERS);
             _writeExceptionsToEventLog = GetConfigValue(config["writeExceptionsToEventLog"], true);
             _databaseName = GetConfigValue(config["databaseName"], DEFAULT_DATABASE_NAME);
-            _collectionName = GetConfigValue(config["collectionName"], DEFAULT_USER_COLLECTION_NAME);
+            _collectionName = GetConfigValue(config["collectionName"], DefaultCollectionName);
+
+            _usingDefaultCollectionName = !config.AllKeys.Contains("collectionName");
 
             ValidatePwdStrengthRegularExpression();
 
@@ -366,18 +387,15 @@ namespace MongoProviders
 
 
             // Initialize Connection String
-            ConnectionStringSettings ConnectionStringSettings = ConfigurationManager.ConnectionStrings[config["connectionStringName"]];
-
-			if (null == ConnectionStringSettings || null == ConnectionStringSettings.ConnectionString || "" == ConnectionStringSettings.ConnectionString.Trim())
-			{
+            string temp = config["connectionStringName"];
+            if (String.IsNullOrWhiteSpace(temp))
                 throw new ProviderException(Resources.Connection_name_not_specified);
-			}
+
+            ConnectionStringSettings ConnectionStringSettings = ConfigurationManager.ConnectionStrings[temp];
+            if (null == ConnectionStringSettings || String.IsNullOrWhiteSpace(ConnectionStringSettings.ConnectionString))
+                throw new ProviderException(String.Format(Resources.Connection_string_not_found, temp));
 
 			_connectionString = ConnectionStringSettings.ConnectionString;
-            if (null == _connectionString)
-            {
-                throw new ProviderException(Resources.Connection_string_not_found);
-            }
 
 
 			// Check for invalid parameters in the config
@@ -421,49 +439,13 @@ namespace MongoProviders
                 if (PasswordFormat != MembershipPasswordFormat.Clear)
                     throw new ProviderException(Resources.Provider_can_not_autogenerate_machine_key_with_encrypted_or_hashed_password_format);
 
-            RegisterUserClassMap();
+            UserClassMap.Register();
 
             // Initialize MongoDB Server
             _server = MongoServer.Create(_connectionString);
             _db = _server.GetDatabase(_databaseName);
         }
 
-        protected void RegisterUserClassMap()
-        {
-            if (!BsonClassMap.IsClassMapRegistered(typeof(User)))
-            {
-                // Initialize Mongo Mappings
-                BsonClassMap.RegisterClassMap<User>(cm =>
-                {
-                    cm.AutoMap();
-                    cm.SetIgnoreExtraElements(true);
-                    cm.GetMemberMap(c => c.Username).SetElementName("uname");
-                    cm.GetMemberMap(c => c.LowercaseUsername).SetElementName("lname");
-                    cm.GetMemberMap(c => c.DisplayName).SetElementName("dname");
-                    cm.GetMemberMap(c => c.ApplicationName).SetElementName("aname");
-                    cm.GetMemberMap(c => c.Comment).SetElementName("cmnt");
-                    cm.GetMemberMap(c => c.CreateDate).SetElementName("create");
-                    cm.GetMemberMap(c => c.Email).SetElementName("email");
-                    cm.GetMemberMap(c => c.LowercaseEmail).SetElementName("lemail");
-                    cm.GetMemberMap(c => c.FailedPasswordAnswerAttemptCount).SetElementName("anscount");
-                    cm.GetMemberMap(c => c.FailedPasswordAttemptCount).SetElementName("passcount");
-                    cm.GetMemberMap(c => c.FailedPasswordAnswerAttemptWindowStart).SetElementName("answindow");
-                    cm.GetMemberMap(c => c.FailedPasswordAttemptWindowStart).SetElementName("passwindow");
-                    cm.GetMemberMap(c => c.IsApproved).SetElementName("apprvd");
-                    cm.GetMemberMap(c => c.IsLockedOut).SetElementName("lockd");
-                    cm.GetMemberMap(c => c.LastActivityDate).SetElementName("actdate");
-                    cm.GetMemberMap(c => c.LastLockedOutDate).SetElementName("lockdate");
-                    cm.GetMemberMap(c => c.LastLoginDate).SetElementName("logindate");
-                    cm.GetMemberMap(c => c.LastPasswordChangedDate).SetElementName("passdate");
-                    cm.GetMemberMap(c => c.Password).SetElementName("pass");
-                    cm.GetMemberMap(c => c.PasswordAnswer).SetElementName("ans");
-                    cm.GetMemberMap(c => c.PasswordFormat).SetElementName("fmt");
-                    cm.GetMemberMap(c => c.PasswordQuestion).SetElementName("qstion");
-                    cm.GetMemberMap(c => c.PasswordSalt).SetElementName("salt");
-
-                });
-            }
-        }
 
         protected T GetConfigValue<T>(string configValue, T defaultValue)
         {
@@ -472,9 +454,6 @@ namespace MongoProviders
 
             return ((T)Convert.ChangeType(configValue, typeof(T)));
         }
-
-
-
 
 
 
@@ -807,7 +786,7 @@ namespace MongoProviders
             var users = _db.GetCollection<User>(_collectionName);
             var query = new QueryDocument();
             query.Add("lname", username.ToLowerInvariant());
-            query.Add("aname", this.ApplicationName);
+            query.Add("app", this.ApplicationName);
 
             var result = users.Remove(query, SafeMode.True);
             return result.Ok;
@@ -1256,7 +1235,7 @@ namespace MongoProviders
 
             try {
                 var users = Users;
-                user = users.AsQueryable().Where(u => u.LowercaseUsername == username.ToLowerInvariant() && u.ApplicationName == ApplicationName).SingleOrDefault();
+                user = users.AsQueryable().Where(u => u.LowercaseUsername == username.ToLowerInvariant()).SingleOrDefault();
             }
             catch (Exception ex) {
                 var msg = String.Format("Unable to retrieve User information for user '{0}'", username);
@@ -1713,101 +1692,6 @@ namespace MongoProviders
 
 
     }
-
-
-
-
-
-	/// <summary>
-	/// Provides general purpose validation functionality.
-	/// </summary>
-	internal class SecUtility
-	{
-		/// <summary>
-		/// Checks the parameter and throws an exception if one or more rules are violated.
-		/// </summary>
-		/// <param name="param">The parameter to check.</param>
-		/// <param name="checkForNull">When <c>true</c>, verify <paramref name="param"/> is not null.</param>
-		/// <param name="checkIfEmpty">When <c>true</c> verify <paramref name="param"/> is not an empty string.</param>
-		/// <param name="invalidChars">When not null, verify <paramref name="param"/> does not contain any of the supplied characters.</param>
-		/// <param name="maxSize">The maximum allowed length of <paramref name="param"/>.</param>
-		/// <param name="paramName">Name of the parameter to check. This is passed to the exception if one is thrown.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="param"/> is null and <paramref name="checkForNull"/> is true.</exception>
-		/// <exception cref="ArgumentException">Thrown if <paramref name="param"/> does not satisfy one of the remaining requirements.</exception>
-		/// <remarks>This method performs the same implementation as Microsoft's version at System.Web.Util.SecUtility.</remarks>
-		internal static void CheckParameter(ref string param, bool checkForNull, bool checkIfEmpty, string invalidChars, int maxSize, string paramName)
-		{
-            if (null == param)
-			{
-				if (checkForNull)
-				{
-					throw new ArgumentNullException(paramName);
-				}
-			}
-			else
-			{
-				param = param.Trim();
-				if (checkIfEmpty && (param.Length < 1))
-				{
-					throw new ArgumentException(String.Format(Resources.Parameter_can_not_be_empty, paramName), paramName);
-				}
-				if ((maxSize > 0) && (param.Length > maxSize))
-				{
-					throw new ArgumentException(String.Format(Resources.Parameter_too_long, paramName, maxSize.ToString(CultureInfo.InvariantCulture)), paramName);
-				}
-				if (!String.IsNullOrWhiteSpace(invalidChars))
-				{
-                    var chars = invalidChars.ToCharArray();
-                    for (int i = 0; i < chars.Length; i++)
-                    {
-                        if (param.Contains(chars[i]))
-                        {
-                            throw new ArgumentException(String.Format(Resources.Parameter_contains_invalid_characters, 
-                                paramName, 
-                                String.Join("','", invalidChars.Split())), 
-                                paramName);
-                        }
-                    }
-				}
-			}
-		}
-
-		/// <summary>
-		/// Verifies that <paramref name="param"/> conforms to all requirements.
-		/// </summary>
-		/// <param name="param">The parameter to check.</param>
-		/// <param name="checkForNull">When <c>true</c>, verify <paramref name="param"/> is not null.</param>
-		/// <param name="checkIfEmpty">When <c>true</c> verify <paramref name="param"/> is not an empty string.</param>
-		/// <param name="invalidChars">When not null, verify <paramref name="param"/> does not contain any of the supplied characters.</param>
-		/// <param name="maxSize">The maximum allowed length of <paramref name="param"/>.</param>
-		/// <returns>Returns <c>true</c> if all requirements are met; otherwise returns <c>false</c>.</returns>
-		internal static bool ValidateParameter(ref string param, bool checkForNull, bool checkIfEmpty, string invalidChars, int maxSize)
-		{
-            if (null == param)
-			{
-				return !checkForNull;
-			}
-			param = param.Trim();
-
-            bool valid = (!checkIfEmpty || (param.Length >= 1)) &&
-                ((maxSize <= 0) || (param.Length <= maxSize));
-
-            if (valid && !String.IsNullOrWhiteSpace(invalidChars))
-            {
-                var chars = invalidChars.ToCharArray();
-                var i = 0;
-                while (valid && i < chars.Length) {
-                    valid &= !param.Contains(chars[i]);
-                    i++;
-                }
-            }
-
-            return valid;
-		}
-
-	}
-
-    
 
 
 

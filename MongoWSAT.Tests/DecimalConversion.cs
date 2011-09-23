@@ -46,5 +46,6 @@ namespace MongoWSAT.Tests
             Assert.AreEqual(peeps[0].Salary, 50000.1m);
 
         }
+
     }
 }

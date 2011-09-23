@@ -43,22 +43,34 @@ namespace MongoProviders.UnitTests
     {
 
         private MongoProviders.MembershipProvider membershipProvider;
-        private MongoProviders.RoleProvider roleProvider;
+        private RoleProvider_Accessor roleProvider;
 
         [SetUp]
 		public override void Setup()
 		{
 			base.Setup();
 
-            _db.DropCollection(MongoProviders.RoleProvider.DEFAULT_ROLE_COLLECTION_NAME);
 
 			membershipProvider = new MongoProviders.MembershipProvider();
 			NameValueCollection config = new NameValueCollection();
 			config.Add("connectionStringName", "local");
-			config.Add("applicationName", "/");
+			config.Add("applicationName", _applicationName);
 			membershipProvider.Initialize(null, config);
+
+            roleProvider = new RoleProvider_Accessor();
+            config = new NameValueCollection();
+			config.Add("connectionStringName", "local");
+			config.Add("applicationName", _applicationName);
+			roleProvider.Initialize(null, config);
 		}
 
+
+        [Test]
+        public void CheckIsUserInRoleForNonExistantUser()
+        {
+            var actual = roleProvider.IsUserInRole("not-there", "admin");
+            Assert.AreEqual(false, actual);
+        }
 
         /*
         [TestMethod()]
@@ -190,10 +202,10 @@ namespace MongoProviders.UnitTests
         [Test]
         public void CreateAndDeleteRoles()
         {
-            roleProvider = new MongoProviders.RoleProvider();
+            roleProvider = new RoleProvider_Accessor();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
-            config.Add("applicationName", "/");
+            config.Add("applicationName", _applicationName);
             roleProvider.Initialize(null, config);
 
             // Add the role
@@ -211,30 +223,105 @@ namespace MongoProviders.UnitTests
         private void AddUser(string username, string password)
         {
             MembershipCreateStatus status;
-            membershipProvider.CreateUser(username, password, "foo@bar.com", null,
+            membershipProvider.CreateUser(username, password, username + "@bar.com", null,
                 null, true, null, out status);
             if (status != MembershipCreateStatus.Success)
                 Assert.Fail("User creation failed");
         }
 
         [Test]
-        public void AddUserToRole()
+        public void AddUsersToRoles()
         {
-            roleProvider = new MongoProviders.RoleProvider();
+            roleProvider = new RoleProvider_Accessor();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
-            config.Add("applicationName", "/");
+            config.Add("applicationName", _applicationName);
             roleProvider.Initialize(null, config);
 
             AddUser("eve", "eveeve!");
+            AddUser("eve2", "eveeve!");
+            AddUser("eve3", "eveeve!");
             roleProvider.CreateRole("Administrator");
-            roleProvider.AddUsersToRoles(new string[] { "eve" },
-                new string[] { "Administrator" });
+            roleProvider.CreateRole("User");
+            roleProvider.CreateRole("Editor");
+            roleProvider.AddUsersToRoles(new string[] { "eve", "eve2" },
+                new string[] { "Administrator", "User" });
             Assert.IsTrue(roleProvider.IsUserInRole("eve", "Administrator"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve", "User"));
+            Assert.IsFalse(roleProvider.IsUserInRole("eve", "Editor"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve2", "Administrator"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve2", "User"));
+            Assert.IsFalse(roleProvider.IsUserInRole("eve2", "Editor"));
 
-            roleProvider.RemoveUsersFromRoles(new string[] { "eve" }, new string[] { "Administrator" });
-            Assert.IsFalse(roleProvider.IsUserInRole("eve", "Administrator"));
+            roleProvider.AddUsersToRoles(new string[] { "eve3" },
+                new string[] { "Editor", "User" });
+            Assert.IsFalse(roleProvider.IsUserInRole("eve3", "Administrator"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve3", "User"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve3", "Editor"));
         }
+
+        [Test]
+        public void RemoveUsersFromRoles()
+        {
+            roleProvider = new RoleProvider_Accessor();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "local");
+            config.Add("applicationName", _applicationName);
+            roleProvider.Initialize(null, config);
+
+            AddUser("eve", "eveeve!");
+            AddUser("eve2", "eveeve!");
+            AddUser("eve3", "eveeve!");
+            roleProvider.CreateRole("Administrator");
+            roleProvider.CreateRole("User");
+            roleProvider.CreateRole("Editor");
+
+
+            // test with one user
+            roleProvider.AddUsersToRoles(new string[] { "eve" },
+                new string[] { "Editor", "User" });
+            Assert.AreEqual(2, roleProvider.GetRolesForUser("eve").Length);
+            Assert.IsTrue(roleProvider.IsUserInRole("eve", "Editor"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve", "User"));
+
+            // remove User role
+            roleProvider.RemoveUsersFromRoles(new string[] { "eve" }, new string[] { "User" });
+            Assert.IsFalse(roleProvider.IsUserInRole("eve", "User"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve", "Editor"));
+            Assert.AreEqual(1, roleProvider.GetRolesForUser("eve").Length);
+
+            // try remove again
+            roleProvider.RemoveUsersFromRoles(new string[] { "eve" }, new string[] { "User" });
+            Assert.IsFalse(roleProvider.IsUserInRole("eve", "User"));
+
+
+
+            // test with two users
+            Assert.IsFalse(roleProvider.IsUserInRole("eve2", "Administrator"));
+            roleProvider.AddUsersToRoles(new string[] { "eve2", "eve3" },
+                new string[] { "Administrator", "User" });
+            Assert.IsTrue(roleProvider.IsUserInRole("eve2", "Administrator"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve3", "Administrator"));
+
+            // remove admin role
+            roleProvider.RemoveUsersFromRoles(new string[] { "eve2" }, new string[] { "Administrator" });
+            Assert.IsFalse(roleProvider.IsUserInRole("eve2", "Administrator"));
+            Assert.IsTrue(roleProvider.IsUserInRole("eve2", "User"));
+            Assert.AreEqual(1, roleProvider.GetRolesForUser("eve2").Length);
+            Assert.AreEqual("User", roleProvider.GetRolesForUser("eve2")[0]);
+
+
+            // verify didn't touch other user
+            Assert.IsTrue(roleProvider.IsUserInRole("eve3", "Administrator"));
+
+
+            // try remove again
+            roleProvider.RemoveUsersFromRoles(new string[] { "eve2" }, new string[] { "Administrator" });
+            Assert.IsFalse(roleProvider.IsUserInRole("eve2", "Administrator"));
+
+
+        }
+
 
         /// <summary>
         /// MySQL Bug #38243 Not Handling non existing user when calling AddUsersToRoles method 
@@ -242,16 +329,21 @@ namespace MongoProviders.UnitTests
         [Test]
         public void AddNonExistingUserToRole()
         {
-            roleProvider = new MongoProviders.RoleProvider();
+            roleProvider = new RoleProvider_Accessor();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
-            config.Add("applicationName", "/");
+            config.Add("applicationName", _applicationName);
             roleProvider.Initialize(null, config);
 
             roleProvider.CreateRole("Administrator");
             roleProvider.AddUsersToRoles(new string[] { "eve" },
                 new string[] { "Administrator" });
-            Assert.IsTrue(roleProvider.IsUserInRole("eve", "Administrator"));
+            
+            // adrian:
+            // The original MySQL Connector Unit Tests use IsTrue but I don't think that makes 
+            // sense.  If user is non-existant the role mapping should not occur.
+            //Assert.IsTrue(roleProvider.IsUserInRole("eve", "Administrator"));
+            Assert.IsFalse(roleProvider.IsUserInRole("eve", "Administrator"));
         }
 
         private void AttemptToAddUserToRole(string username, string role)
@@ -269,10 +361,10 @@ namespace MongoProviders.UnitTests
         [Test]
         public void IllegalRoleAndUserNames()
         {
-            roleProvider = new MongoProviders.RoleProvider();
+            roleProvider = new RoleProvider_Accessor();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
-            config.Add("applicationName", "/");
+            config.Add("applicationName", _applicationName);
             roleProvider.Initialize(null, config);
 
             AttemptToAddUserToRole("test", null);
@@ -301,7 +393,7 @@ namespace MongoProviders.UnitTests
             var provider = new MongoProviders.MembershipProvider();
             NameValueCollection config1 = new NameValueCollection();
             config1.Add("connectionStringName", "local");
-            config1.Add("applicationName", "/");
+            config1.Add("applicationName", _applicationName);
             config1.Add("passwordStrengthRegularExpression", "bar.*");
             config1.Add("passwordFormat", "Clear");
             provider.Initialize(null, config1);
@@ -311,27 +403,28 @@ namespace MongoProviders.UnitTests
             var provider2 = new MongoProviders.MembershipProvider();
             NameValueCollection config2 = new NameValueCollection();
             config2.Add("connectionStringName", "local");
-            config2.Add("applicationName", "/myapp");
+            config2.Add("applicationName", _appName2);
             config2.Add("passwordStrengthRegularExpression", ".*");
             config2.Add("passwordFormat", "Clear");
             provider2.Initialize(null, config2);
 
-            roleProvider = new MongoProviders.RoleProvider();
+            roleProvider = new RoleProvider_Accessor();
             NameValueCollection config = new NameValueCollection();
             config.Add("connectionStringName", "local");
-            config.Add("applicationName", "/");
+            config.Add("applicationName", _applicationName);
             roleProvider.Initialize(null, config);
 
             MongoProviders.RoleProvider r2 = new MongoProviders.RoleProvider();
             NameValueCollection configr2 = new NameValueCollection();
             configr2.Add("connectionStringName", "local");
-            configr2.Add("applicationName", "/myapp");
+            configr2.Add("applicationName", _appName2);
             r2.Initialize(null, configr2);
 
             roleProvider.CreateRole("Administrator");
             roleProvider.AddUsersToRoles(new string[] { "foo" },
                 new string[] { "Administrator" });
             Assert.IsFalse(r2.IsUserInRole("foo", "Administrator"));
+
         }
 
     }
