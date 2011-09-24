@@ -31,6 +31,8 @@ using System.Web.Security;
 using System.Collections.Specialized;
 using System.Configuration.Provider;
 using MongoProviders;
+using MongoDB.Driver.Builders;
+using System.Collections.Generic;
 
 namespace MongoProviders.UnitTests
 {
@@ -66,49 +68,6 @@ namespace MongoProviders.UnitTests
 		}
 
 
-        /*
-
-        [TestMethod()]
-        public void FindUsersInRoleTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string roleName = string.Empty; // TODO: Initialize to an appropriate value
-            string usernameToMatch = string.Empty; // TODO: Initialize to an appropriate value
-            string[] expected = null; // TODO: Initialize to an appropriate value
-            string[] actual;
-            actual = target.FindUsersInRole(roleName, usernameToMatch);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
-
-
-        [TestMethod()]
-        public void GetUsersInRoleTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string roleName = string.Empty; // TODO: Initialize to an appropriate value
-            string[] expected = null; // TODO: Initialize to an appropriate value
-            string[] actual;
-            actual = target.GetUsersInRole(roleName);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
-
-
-
-        [TestMethod()]
-        public void RoleExistsTest()
-        {
-            RoleProvider target = new RoleProvider(); // TODO: Initialize to an appropriate value
-            string roleName = string.Empty; // TODO: Initialize to an appropriate value
-            bool expected = false; // TODO: Initialize to an appropriate value
-            bool actual;
-            actual = target.RoleExists(roleName);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
-
-        */
 
 
 
@@ -344,6 +303,26 @@ namespace MongoProviders.UnitTests
         }
 
         [Test]
+        public void RoleExistsTest()
+        {
+            roleProvider = new RoleProvider();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "local");
+            config.Add("applicationName", _applicationName);
+            roleProvider.Initialize(null, config);
+
+            roleProvider.CreateRole("Administrator");
+            roleProvider.CreateRole("User");
+            roleProvider.CreateRole("Editor");
+
+
+            Assert.IsTrue(roleProvider.RoleExists("Administrator"));
+            Assert.IsTrue(roleProvider.RoleExists("User"));
+            Assert.IsTrue(roleProvider.RoleExists("Editor"));
+            Assert.IsFalse(roleProvider.RoleExists("Jack"));
+        }
+
+        [Test]
         public void CheckIsUserInRoleForNonExistantUser()
         {
             var actual = roleProvider.IsUserInRole("not-there", "admin");
@@ -388,6 +367,147 @@ namespace MongoProviders.UnitTests
                 new string[] { "Administrator" });
             Assert.IsFalse(r2.IsUserInRole("foo", "Administrator"));
 
+        }
+
+        [Test]
+        public void ExampleOfHowToQueryArray()
+        {
+            roleProvider = new RoleProvider();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "local");
+            config.Add("applicationName", _applicationName);
+            roleProvider.Initialize(null, config);
+
+            AddUser("eve", "eveeve!");
+            AddUser("evelyn", "eveeve!");
+            AddUser("emily", "eveeve!");
+            AddUser("robert", "eveeve!");
+            AddUser("carly", "eveeve!");
+            roleProvider.CreateRole("User");
+            roleProvider.CreateRole("Editor");
+
+            roleProvider.AddUsersToRoles(new string[] { "eve", "evelyn", "emily", "robert", "carly" },
+                new string[] { "User" });
+            roleProvider.AddUsersToRoles(new string[] { "emily", "robert", "carly" },
+                new string[] { "Editor" });
+
+            var cursor = _db.GetCollection(roleProvider.UserCollectionName).Find(Query.EQ("roles", "Editor"));
+            cursor.SetFields(Fields.Include("lname").Exclude("_id"));
+
+            var names = new List<string>();
+            foreach (var doc in cursor)
+            {
+                var str = doc["lname"].AsString;
+                names.Add(str);
+            }
+
+            Assert.AreEqual(3, names.Count);
+        }
+
+        [Test]
+        public void FindUsersInRoleTest()
+        {
+            roleProvider = new RoleProvider();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "local");
+            config.Add("applicationName", _applicationName);
+            roleProvider.Initialize(null, config);
+
+            AddUser("eve", "eveeve!");
+            AddUser("evelyn", "eveeve!");
+            AddUser("emily", "eveeve!");
+            AddUser("robert", "eveeve!");
+            AddUser("carly", "eveeve!");
+            roleProvider.CreateRole("User");
+
+            roleProvider.AddUsersToRoles(new string[] { "eve", "evelyn", "emily", "robert", "carly" },
+                new string[] { "User" });
+
+            // Exact
+            var users = roleProvider.FindUsersInRole("User", "eve");
+            Assert.AreEqual(1, users.Length);
+            Assert.IsTrue(users.Contains("eve"));
+
+            users = roleProvider.FindUsersInRole("User", "bob");
+            Assert.AreEqual(0, users.Length);
+
+            // StartsWith
+            users = roleProvider.FindUsersInRole("User", "eve%");
+            Assert.AreEqual(2, users.Length);
+            Assert.IsTrue(users.Contains("eve"));
+            Assert.IsTrue(users.Contains("evelyn"));
+
+            users = roleProvider.FindUsersInRole("User", "bob%");
+            Assert.AreEqual(0, users.Length);
+
+            // EndsWith
+            users = roleProvider.FindUsersInRole("User", "%ly");
+            Assert.AreEqual(2, users.Length);
+            Assert.IsTrue(users.Contains("emily"));
+            Assert.IsTrue(users.Contains("carly"));
+
+            users = roleProvider.FindUsersInRole("User", "%ark");
+            Assert.AreEqual(0, users.Length);
+
+            // Contains
+            users = roleProvider.FindUsersInRole("User", "%ly%");
+            Assert.AreEqual(3, users.Length);
+            Assert.IsTrue(users.Contains("evelyn"));
+            Assert.IsTrue(users.Contains("emily"));
+            Assert.IsTrue(users.Contains("carly"));
+
+            users = roleProvider.FindUsersInRole("User", "%bob%");
+            Assert.AreEqual(0, users.Length);
+
+        }
+
+
+        [Test]
+        public void GetUsersInRoleTest()
+        {
+            roleProvider = new RoleProvider();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "local");
+            config.Add("applicationName", _applicationName);
+            roleProvider.Initialize(null, config);
+
+            AddUser("eve", "eveeve!");
+            AddUser("eve2", "eveeve!");
+            AddUser("eve3", "eveeve!");
+            AddUser("eve4", "eveeve!");
+            roleProvider.CreateRole("Administrator");
+            roleProvider.CreateRole("User");
+            roleProvider.CreateRole("Editor");
+
+            roleProvider.AddUsersToRoles(new string[] { "eve", "eve2", "eve3", "eve4" },
+                new string[] { "User" });
+            roleProvider.AddUsersToRoles(new string[] { "eve", "eve2" },
+                new string[] { "Editor" });
+            roleProvider.AddUsersToRoles(new string[] { "eve" },
+                new string[] { "Administrator" });
+
+            var users = roleProvider.GetUsersInRole("User");
+            var editors = roleProvider.GetUsersInRole("Editor");
+            var admins = roleProvider.GetUsersInRole("Administrator");
+
+
+            Assert.AreEqual(4, users.Length);
+            Assert.IsTrue(users.Contains("eve"));
+            Assert.IsTrue(users.Contains("eve2"));
+            Assert.IsTrue(users.Contains("eve3"));
+            Assert.IsTrue(users.Contains("eve4"));
+
+            Assert.AreEqual(2, editors.Length);
+            Assert.IsTrue(editors.Contains("eve"));
+            Assert.IsTrue(editors.Contains("eve2"));
+            Assert.IsFalse(editors.Contains("eve3"));
+            Assert.IsFalse(editors.Contains("eve4"));
+            
+            Assert.AreEqual(1, admins.Length);
+            Assert.IsTrue(admins.Contains("eve"));
+            Assert.IsFalse(admins.Contains("eve2"));
+            Assert.IsFalse(admins.Contains("eve3"));
+            Assert.IsFalse(admins.Contains("eve4"));
         }
 
     }

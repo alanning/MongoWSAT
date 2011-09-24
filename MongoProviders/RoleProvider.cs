@@ -28,6 +28,8 @@ using System.Web.Configuration;
 using FluentMongo.Linq;
 using MongoDB.Driver.Builders;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using System.Text.RegularExpressions;
 
 namespace MongoProviders
 {
@@ -45,6 +47,8 @@ namespace MongoProviders
     /// </summary>
     public class RoleProvider : System.Web.Security.RoleProvider
     {
+        #region Public Properties/Fields
+
         public const string DEFAULT_NAME = "MongoRoleProvider";
         public const string DEFAULT_DATABASE_NAME = "test";
         public const string DEFAULT_ROLE_COLLECTION_SUFFIX = "roles";
@@ -52,21 +56,6 @@ namespace MongoProviders
         public const string DEFAULT_INVALID_CHARACTERS = ",%";
 		public const int MAX_USERNAME_LENGTH = 256;
 		public const int MAX_ROLE_LENGTH = 256;
-
-        protected string _connectionString;
-        protected MachineKeySection _machineKey;
-        protected string _databaseName;
-        protected string _userCollectionName;
-        protected string _roleCollectionName;
-
-        protected MongoServer _server;
-        protected MongoDatabase _db;
-
-        protected string _applicationName;
-        protected string _invalidUsernameCharacters;
-        protected string _invalidRoleCharacters;
-        protected bool _defaultRoleCollection;
-        protected bool _defaultUserCollection;
 
         public string DefaultCollectionName
         {
@@ -126,6 +115,27 @@ namespace MongoProviders
             }
         }
 
+        #endregion
+
+
+        #region Protected Properties/Fields
+
+        protected string _connectionString;
+        protected MachineKeySection _machineKey;
+        protected string _databaseName;
+        protected string _userCollectionName;
+        protected string _roleCollectionName;
+
+        protected MongoServer _server;
+        protected MongoDatabase _db;
+
+        protected string _applicationName;
+        protected string _invalidUsernameCharacters;
+        protected string _invalidRoleCharacters;
+        protected bool _defaultRoleCollection;
+        protected bool _defaultUserCollection;
+
+
         protected string InvalidUsernameCharacters
         {
             get { return _invalidUsernameCharacters; }
@@ -171,6 +181,10 @@ namespace MongoProviders
             }
         }
 
+        #endregion
+
+
+        #region Public Methods
 
         public override void Initialize(string name, NameValueCollection config){
 
@@ -238,15 +252,6 @@ namespace MongoProviders
 
         }
         
-        protected T GetConfigValue<T>(string configValue, T defaultValue)
-        {
-            if (String.IsNullOrEmpty(configValue))
-                return defaultValue;
-
-            return ((T)Convert.ChangeType(configValue, typeof(T)));
-        }
-
-
 
         public override void AddUsersToRoles(string[] usernames, string[] roleNames)
         {
@@ -312,8 +317,33 @@ namespace MongoProviders
 
         public override string[] FindUsersInRole(string roleName, string usernameToMatch)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrWhiteSpace(usernameToMatch)){
+                return new string[0];
+            }
+
+            var map = BsonClassMap.LookupClassMap(typeof(User));
+            var elementName = map.GetMemberMap("LowercaseUsername").ElementName;
+            var rolesName = map.GetMemberMap("Roles").ElementName;
+            QueryComplete userQuery = MakeQuery(usernameToMatch.ToLowerInvariant(), elementName);
+            var query = Query.And(
+                Query.EQ(rolesName, roleName),
+                userQuery
+                );
+            var cursor = _db.GetCollection(_userCollectionName).Find(query);
+
+            // only want the usernames
+            cursor.SetFields(Fields.Include(elementName).Exclude("_id"));
+
+            var names = new List<string>();
+            foreach (var doc in cursor)
+            {
+                var str = doc[elementName].AsString;
+                names.Add(str);
+            }
+
+            return names.ToArray();
         }
+
 
         public override string[] GetAllRoles()
         {
@@ -370,5 +400,67 @@ namespace MongoProviders
         {
             return Roles.Contains(roleName);
         }
+
+
+        #endregion
+
+
+        #region Protected Methods
+
+        protected T GetConfigValue<T>(string configValue, T defaultValue)
+        {
+            if (String.IsNullOrEmpty(configValue))
+                return defaultValue;
+
+            return ((T)Convert.ChangeType(configValue, typeof(T)));
+        }
+
+
+        protected QueryComplete MakeQuery(string strToMatch, string elementName)
+        {
+            if (String.IsNullOrWhiteSpace(strToMatch))
+                throw new ArgumentException("strToMatch can not be empty", "strToMatch");
+
+            var startsWith = strToMatch.StartsWith("%");
+            var endsWith = strToMatch.EndsWith("%");
+
+            // check for "%" and "%%" cases
+            if ((startsWith && 1 == strToMatch.Length) ||
+                (startsWith && endsWith && 2 == strToMatch.Length)) {
+                throw new ArgumentException("strToMatch must contain at least one character other than '%'", "strToMatch");
+            }
+
+            // strip leading and trailing percent
+            if (startsWith) {
+                strToMatch = strToMatch.Substring(1);
+            }
+            if (endsWith) {
+                strToMatch = strToMatch.Substring(0, strToMatch.Length - 1);
+            }
+
+            var value = Regex.Escape(strToMatch);
+            
+            if (startsWith && endsWith)
+            {
+                // %mit% 
+                return Query.Matches(elementName, new BsonRegularExpression(value));
+            }
+            else if (startsWith) {
+                // "%ith"
+                return Query.Matches(elementName, new BsonRegularExpression(string.Format("{0}$", value)));
+            }
+            else if (endsWith)
+            {
+                // "smi%"
+                return Query.Matches(elementName, new BsonRegularExpression(string.Format("^{0}", value)));
+            }
+            else
+            {
+                return Query.EQ(elementName, strToMatch);
+            }
+        }
+
+        #endregion
+
     }
 }
