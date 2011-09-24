@@ -1,64 +1,27 @@
 MongoWSAT
 
-An ASP.NET Web Site Administration Tool with MongoDB Membership and Role Providers.
+An ASP.NET MVC project with a pre-configured admin section using MongoDB Membership and Role Providers.
 
 
-Rationale:
+Motivation:
 
-The original goal of this project was to use the MyWSAT Website Starter Kit code located here:
-http://mywsat.codeplex.com/
-...but running against a MongoDB backend. It became quickly apparent that the latest version of MyWSAT is very closely tied to SQL Server (read: too much work to convert). Therefore an older version of Hunzonian's WSAT Starter Kit was used instead. Much of the functionality remains the same but the style of the administration site is not quite as nice.
+The goal of this project is to create a quick way to administer users for ASP.NET MVC websites running against MongoDB.
+
+ASP.NET MVC sites can use ASP.NET pages without issue so Hunzonian's MyWSAT Website Starter Kit offers a great way to get up and running quickly. The problem is that the latest version of MyWSAT is very closely tied to SQL Server and it would be too much work to convert.  Therefore an older version of the WSAT Starter Kit was used instead.
+
+  MyWSAT
+  http://mywsat.codeplex.com/
 
 
 License:
 
-The WSAT code is largely unchanged from Hunzonian's original version and retains the original LGPL license.
-
-* GPL NOTICE * 
-The MongoProviders.UnitTests project is GPL since it is a port of the Unit Tests from the MySQL Connector project (GPL).
-The reason the rest of this project can remain non-GPL'd is due to the FOSS exception as described here:
-http://www.mysql.com/about/legal/licensing/foss-exception/
-If you are going to include MongoWSAT in a non-open source project then you _must_ remove the MongoProviders.UnitTests project to remain compliant with the MySQL Connector license.
-
-All other code, including the MongoDB Providers are licensed under the MIT License.
+  LGPL - The WSAT code is largely unchanged from Hunzonian's original version and retains the original LGPL license.
 
 
 Dependencies:
 
-All dependencies are included but you may wish to refresh with NuGet to get the latest versions.
-MongoDB CSharp Driver - http://www.mongodb.org/display/DOCS/CSharp+Language+Center
-FluentMongo - https://github.com/craiggwilson/fluent-mongo
-NUnit (for MongoProvider Unit Tests) - NuGet
+All dependencies are included.
+  MongoProviders - https://github.com/alanning/MongoProviders
+  NUnit - NuGet
 
-
-References:
-
-Many projects were referenced when making this but here are some of the most relevant:
-
-	SQL Membership, Role, Profile Provider Source Code
-	http://download.microsoft.com/download/a/b/3/ab3c284b-dc9a-473d-b7e3-33bacfcc8e98/ProviderToolkitSamples.msi
-
-    SQLite Membership, Role, Profile Providers
-    http://www.codeproject.com/KB/aspnet/SQLite-Providers.aspx
-
-    Sample Custom MembershipProvider (MSDN)
-    http://msdn.microsoft.com/en-us/library/6tc47t75.aspx
-    
-    MongoMember (V Slavin)
-    https://github.com/nakedslavin/MongoDB-Membership-Provider--ASP.NET-/
-    
-    Mongodb Membership Provider (Teun Duynstee)
-    http://code.google.com/p/aspnetmongoproviders/
-   
-    Custom Membership Provider OnValidatingPassword question
-    http://forums.asp.net/t/991002.aspx/1
-
-	MySQL Connector (for Unit Tests)
-	http://dev.mysql.com/downloads/connector/net/
-
-
-Thanks:
-
-  Special thanks to Craig Wilson for his FluentMongo Linq provider.
-  https://github.com/craiggwilson/fluent-mongo
 
