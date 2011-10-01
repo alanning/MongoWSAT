@@ -27,7 +27,7 @@ namespace MongoWSAT.Models
         public string ConfirmPassword { get; set; }
     }
 
-    public class LogOnModel
+    public class LoginModel
     {
         [Required]
         [Display(Name = "User name")]

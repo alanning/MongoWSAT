@@ -1,0 +1,134 @@
+/* Basic Styles */
+body{font-family: lucida grande, arial, helvetica,sans-serif; font-size: 12px; color: #000000; margin: 0px; padding: 0px; background-color: #FFFFFF;}
+a:link{text-decoration: none;color: #1C55A4;}
+a:visited{text-decoration: none;color: #1C55A4;}
+a:hover{color: #000000;text-decoration: underline;}
+a:active{text-decoration: none;color: #1C55A4;}
+a:focus{outline: none;}
+
+/* accordion - ajax styles */
+.accordionHeader a{display: block; border: 1px solid #96B8DB; border-top: #FFFFFF; color: #000000; background-image: url(images/white-top-bottom.gif); font-size: 11px; font-weight: bold; padding: 6px; margin-bottom: 1px; cursor: pointer;}
+.accordionHeader a:hover{border: 1px solid #666666; border-top: #FFFFFF; color: #FFFFFF; text-decoration: none; cursor: pointer;}
+.accordionContent{background-image: url(images/accordion-bg.png); border: 1px solid #96B8DB; margin-bottom: 1px; overflow: hidden;}
+.accordionLink a{display:block; margin-top: 2px; border: 1px dotted #CCCCCC; border-right: 0px; border-left: 0px; font-size: 12px; color: #000000; padding: 3px; padding-left: 6px;}
+.accordionLink a:hover{border: 1px solid #96B8DB; border-right: 0px; border-left: 0px; background-image: url(images/bg-orange-small.jpg); color: #000000; text-decoration: none;}
+.accordionImage1{width: 138px; margin-left: auto; margin-right: auto; background-image: url(images/members.gif); background-repeat: no-repeat; height: 80px;}
+.accordionImage2{width: 138px; margin-left: auto; margin-right: auto; background-image: url(images/members.gif); background-repeat: no-repeat; height: 80px;}
+.accordionImage3{width: 138px; margin-left: auto; margin-right: auto; background-image: url(images/members.gif); background-repeat: no-repeat; height: 80px;}
+.accordionImage4{width: 138px; margin-left: auto; margin-right: auto; background-image: url(images/members.gif); background-repeat: no-repeat; height: 80px;}
+
+/* wraps the admin navigation */
+.adminNavigationWrap{position: absolute; left: 0px; width: 210px; margin-top: 10px;}
+
+/* wraps the admin content */
+.adminContentWrap{margin-left: 200px; margin-top: 10px; left: 220px; padding-bottom: 20px;}
+
+/* form help descriptions in admin forms */
+.adminHelp{margin-bottom:20px; color: #666666; border: 1px dashed #D5D4E1; padding: 3px; background-color: #FFFFE8; font-size: 11px;}
+.adminHelp2{margin-bottom:20px; color: #666666; border: 1px solid #D5D4E1; padding: 3px; background-color: #FFFFE8; font-size: 11px; margin-top: 3px;}
+
+/* a-z alphabet link styles */
+.aTozNavigaion a{display:block; float: left; border: 1px solid #CCCCCC; font-size: 13px; color: #000000; margin-right: 3px; background-image: url(images/grid-header-bg.jpg); padding: 3px; width: 15px; text-align: center;}
+.aTozNavigaion a:hover{border: 1px solid #6699cc; background-image: url(images/a-zHover-bg.jpg); color: #000000; text-decoration: none;}
+
+/* checkbox list styles */
+.checkboxList{}
+
+/* collapsible ajax Panel Styles */
+.CollapsePanel{background-image: url(images/collapse-panel-1.jpg); background-color: #FFFFFF; background-position: left; background-repeat: repeat-y; height: 0px; overflow: hidden; width: 100%; }
+.CollapsePanelHeader{background-color: #FFFFFF; background-image: url(images/collapse-panel-2.jpg); cursor: hand; font-weight: normal; height: 20px; padding-top: 5px; width: 100%; }
+.CollapseHelpHints{border-bottom: 1px solid #D5D4E1; font-size: 10px; padding: 5px; text-align: left; }
+
+/* detailsview default skin styles */
+.detailsviewMain{width: 100%; border: 1px solid #E9E9EF; background-color: #FCFCFC;}
+.detailsviewMain td{padding:2px 5px; border: 1px solid #D5D4E1;}
+.detailsviewMain th{padding:2px 5px; border: 1px solid #D5D4E1;}
+.detailsviewheaderBG{background-image: url(images/grid-header-bg.jpg); text-align: center; height: 22px; color: #000000; font-weight: bold; font-size: 14px;}
+.detailsviewRowStyle{Border: 1px solid #D5D4E1; height: 22px;}
+.detailsviewRowStyle:hover{Border: 1px solid #D5D4E1; background-image: url(images/a-zHover-bg.jpg);}
+.detailsviewAlternateRowStyle{background-color: #FCFCFC; height: 22px;}
+.detailsviewAlternateRowStyle:hover{background-image: url(images/a-zHover-bg.jpg);}
+.detailsviewFieldHeader{width: 170px;}
+
+/* email header with buttons and radio buttons */
+.EmailHeader{background-image: url(images/grid-header-bg.jpg); padding: 3px; border: 1px solid #D5D4E1; border-bottom: 0px;}
+.EmailHeader2{background-color: #F5F4F8; background-image: url(images/grid-header-bg.jpg); border-top: 1px #D1E4FF solid; border-top-color: #C6C6C6; width: 100%; }
+
+/* admin membership form wrap */
+.formOutlineDiv{border: 1px solid #96B8DB; border-top: 0px; padding: 20px; margin-left: 20px;margin-right: 20px; margin-bottom: 60px; background-color: #FCFCFC;}
+.formHeaderDiv{border-bottom: 0px;font-size: 15px; font-weight: normal;  color: #000000;background-image: url(images/white-top-bottom.gif);padding: 5px;margin-left: 20px;margin-right: 20px;border: 1px Solid #96B8DB;border-bottom: 0px; border-top: 0px;}
+
+/* form element styles */
+.formNameTitle{font-size: 16px; font-weight: bold;}
+.formSectionTitle{font-weight: bold; border-bottom: 1px solid #D5D4E1;}
+.formLabelsText{}
+
+/* page footer control style - admin pages */
+.footerControl{height: 40px; width: 100%; background-image: url(images/admin-footer-2-bg.jpg); margin-top: 10px; border-top: 1px solid #6094C8; position: fixed; bottom: 0px;}
+.footerTitleText{text-align: center; padding: 15px; color: #FFFFFF;}
+
+/* gridview styles for skin file */
+.gridviewMain{width: 100%; font-size: 11px; border: 1px solid #EBEBEB;}
+.gridviewMain td{padding:1px 5px; border: 1px solid #EBEBEB;}
+.gridviewMain th{padding:1px 5px; border: 1px solid #EBEBEB;}
+.gridheaderBG{background-image: url(images/grid-header-bg.jpg); text-align: center; height: 22px; color: #000000; font-weight: bold; font-size: 11px;}
+.gridheaderBG a{color: #000000;}
+.gridheaderBG a:hover{text-decoration: underline;}
+.gridrowclick{background-image: url(images/grid-row-hover.jpg); }
+.gridrowSelectedBG{background-image: url(images/a-zHover-bg.jpg); }
+.gridRowStyle{Border: 1px solid #EBEBEB;}
+.gridRowStyle:hover{Border: 1px solid #EBEBEB; background-image: url(images/a-zHover-bg.jpg);}
+.gridAlternateRowStyle{background-color: #F4F4F4;}
+.gridAlternateRowStyle:hover{background-image: url(images/a-zHover-bg.jpg);}
+.gridColumnHeaderBG{background-image: url(images/grid-header-bg.jpg);}
+.gridColumnHeaderBG:hover{background-image: url(images/a-zHover-bg.jpg);}
+
+/* page header control style - admin pages */
+.headerControl{height: 70px; background-image: url(images/admin-header-2-bg.jpg); border-bottom: 1px solid #96B8DB;}
+.headerTitleImage{height: 70px;background-image: url(images/admin-title-2.jpg);background-repeat: no-repeat; width: 130px; float: left;}
+.headerTitleText{color: #FFFFFF; font-size: 20px; float: left; margin-top: 20px; margin-left: 5px;}
+
+/* admin login name and status div */
+.loginNameAndStatus{float: right; margin-right: 20px; margin-top: 10px; width: 300px; text-align: right; color: #000000;}
+.loginNameAndStatus a{color: #000000; text-decoration: underline;}
+.loginNameAndStatus a:hover{color: #FFFFFF;}
+
+/* ajax MaskedEdit Related Styles */
+.MaskedEditFocus{background-color: #ffffcc; color: #000000;}
+.MaskedEditMessage{color: #ff0000; font-weight: bold;}
+.MaskedEditError{background-color: #ffcccc;}
+.MaskedEditFocusNegative{background-color: #ffffcc; color: #000000;}
+.MaskedEditBlurNegative{color: #ff0000;}
+
+/* admin membership gridview custom pager */
+.membersGridViewPager a{display:block; float: left; border: 1px solid #CCCCCC; font-size: 11px; color: #000000; margin-right: 3px; margin-top: 6px; background-image: url(images/grid-header-bg.jpg); padding: 3px;}
+.membersGridViewPager a:hover{border: 1px solid #6699cc; background-image: url(images/a-zHover-bg.jpg); color: #000000; text-decoration: none;}
+
+/* admin membership gridview built-in pager */
+.membersGridViewPager2 tr{padding: 0px; border-width: 0px; border-style: none;}
+.membersGridViewPager2 td{padding: 0px; border-width: 0px; border-style: none;}
+.membersGridViewPager2 a{display:block; float: left; border: 1px solid #CCCCCC; font-size: 11px; color: #000000; background-image: url(images/grid-header-bg.jpg); padding: 5px; margin-right: 2px;}
+.membersGridViewPager2 a:hover{border: 1px solid #6699cc; background-image: url(images/a-zHover-bg.jpg); color: #000000; text-decoration: none;}
+
+/* delete all membership users button */
+.membersDeleteAll a{display:block; float: right; border: 1px solid #CCCCCC; font-size: 11px; color: #000000; margin-top: 6px; background-image: url(images/grid-header-bg.jpg); padding: 3px;}
+.membersDeleteAll a:hover{border: 1px solid #6699cc; background-image: url(images/a-zHover-bg.jpg); color: #000000; text-decoration: none;}
+
+/* delete selected users button */
+.membersToggle a{display:block; float: left; border: 1px solid #CCCCCC; font-size: 11px; color: #000000; margin-left: 3px; margin-top: 6px; background-image: url(images/grid-header-bg.jpg); padding: 3px;}
+.membersToggle a:hover{border: 1px solid #6699cc; background-image: url(images/a-zHover-bg.jpg); color: #000000; text-decoration: none;}
+
+/* (default) ajax password strength indicator option 1 - simple text */
+.passwordStrengthIndicator {background-color:Gray; color:White; font-family:Arial; font-size:x-small; font-style:italic; padding: 2px 3px 2px 3px; margin-top: 2px;}
+
+/* ajax password strength indicator option 2 - bar indicator */
+.passwordStrengthBarIndicator{color:Blue; background-color:Blue; padding-bottom:1px;}
+.passwordStrengthBarBorder{border-style:solid; border-width:1px; width:200px; vertical-align:middle;}
+
+/* user category links - admin pages */
+.userCategories a{display:block; float: left; border: 1px solid #96B8DB; font-size: 12px; color: #000000; margin-right: 3px; background-image: url(images/user-categories-bg.gif); padding: 3px;}
+.userCategories a:hover{border: 1px solid #96B8DB; background-image: url(images/a-zHover-bg.jpg); color: #000000; text-decoration: none;}
+.userCategoriesWrap{height: 23px; padding: 2px; padding-left: 20px; background-image: url(images/user-categories-bg.gif); margin-left: 20px;margin-right: 20px;border: 1px Solid #96B8DB;border-bottom: 0px solid #CCCCCC;}
+
+/* div wrap for number of registered and online users */
+.whosOnlineWrap {font-size: 11px; margin-top: 5px;}

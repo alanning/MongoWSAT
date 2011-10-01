@@ -3,6 +3,11 @@ MongoWSAT
 An ASP.NET MVC project with a pre-configured admin section using MongoDB Membership and Role Providers.
 
 
+Usage:
+
+* Point browser to 'Users/Default.aspx' and create your default admin account and Administrator role
+
+
 Motivation:
 
 The goal of this project is to create a quick way to administer users for ASP.NET MVC websites running against MongoDB.

@@ -13,18 +13,18 @@ namespace MongoWSAT.Controllers
     {
 
         //
-        // GET: /Account/LogOn
+        // GET: /Account/Login
 
-        public ActionResult LogOn()
+        public ActionResult Login()
         {
             return View();
         }
 
         //
-        // POST: /Account/LogOn
+        // POST: /Account/Login
 
         [HttpPost]
-        public ActionResult LogOn(LogOnModel model, string returnUrl)
+        public ActionResult Login(LoginModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -43,7 +43,19 @@ namespace MongoWSAT.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "The user name or password provided is incorrect.");
+                    var user = Membership.GetUser(model.UserName);
+                    if (user.IsLockedOut)
+                    {
+                        ModelState.AddModelError("", "Your account is currently locked due to too many incorrect login attempts.");
+                    }
+                    else if (!user.IsApproved)
+                    {
+                        ModelState.AddModelError("", "Your account has not been verified. Please check your email for instructions on how to verify your account.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "The user name or password provided is incorrect.");
+                    }
                 }
             }
 

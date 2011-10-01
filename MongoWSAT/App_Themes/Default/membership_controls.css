@@ -1,0 +1,522 @@
+.foo {} /* W3C CSS validator likes CSS files to start with a class rather than a comment. Soooooo.... */
+
+/* This style sheet is intended to contain OFTEN CHANGED rules used when the Membership control adapters are enabled. */
+/* Empty rules are provided merely as a convenience for your future use or experimentation. */
+
+/****************************************************************************/
+/****************************************************************************/
+.PrettyLogin
+{
+    width: 18em;
+}
+
+.PrettyLogin .AspNet-Login
+{
+    font-family: Verdana;
+    font-size: 0.8em;
+    padding: 4px;
+    border: solid 1px #284775;
+}
+
+.PrettyLogin .AspNet-Login label,
+.PrettyLogin .AspNet-Login input
+{
+    color: #5D7B9D;
+}
+
+.PrettyLogin .AspNet-Login input
+{
+    font-size: 1em;  /* lets the form element scale */
+}
+
+/* This rule is used when AutoAccessKey is true */
+.PrettyLogin .AspNet-Login label em
+{
+    text-decoration: underline;
+    font-style: normal;
+}
+
+.PrettyLogin .AspNet-Login .AspNet-Login-TitlePanel
+{
+    font-weight: bold;
+    color: #F7F6F3;
+    background: #5D7B9D;
+    text-align: center;
+    height: 1.7em;
+    margin-bottom: 0.3em;
+    padding-top: 0.4em;
+}
+
+.PrettyLogin .AspNet-Login .AspNet-Login-FailurePanel
+{
+    height: 4em;
+    color: #990000;
+}
+
+.PrettyLogin .AspNet-Login .AspNet-Login-UserPanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-PasswordPanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-RememberMePanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-SubmitPanel
+{
+    padding: 0.25em 0.1em 0 0;
+}
+
+.PrettyLogin .AspNet-Login .AspNet-Login-UserPanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-PasswordPanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-SubmitPanel
+{
+    text-align:right;
+}
+
+.PrettyLogin .AspNet-Login .AspNet-Login-UserPanel label,
+.PrettyLogin .AspNet-Login .AspNet-Login-PasswordPanel label
+{
+    white-space: nowrap;
+}
+
+.PrettyLogin .AspNet-Login .AspNet-Login-UserPanel input,
+.PrettyLogin .AspNet-Login .AspNet-Login-PasswordPanel input
+{
+    width: 9em;
+}
+
+.PrettyLogin .AspNet-Login .AspNet-Login-SubmitPanel input
+{
+    background: #284775;
+    color: #00FFFF;
+    border: solid 1px #5D7B9D;
+    height: 1.7em;
+}
+
+.PrettyLogin .AspNet-Login .AspNet-Login-InstructionPanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-HelpPanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-PasswordPanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-RememberMePanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-CreateUserPanel,
+.PrettyLogin .AspNet-Login .AspNet-Login-PasswordRecoveryPanel
+{
+}
+
+/****************************************************************************/
+/****************************************************************************/
+#LoginStatus 
+{
+    margin-bottom: 1em;
+}
+
+#LoginStatus a.AspNet-LoginStatus,
+#LoginStatus a:visited.AspNet-LoginStatus
+{
+    color: #00FFFF;
+}
+
+#LoginStatus a:hover.AspNet-LoginStatus
+{
+    color: White;
+}
+
+/* ------------------------------------------------------------------- */
+/* Specific to this sample web site. */
+/* These rules are probably not useful in your site. */
+
+#LoginStatus .LoginStatus-Skin
+{
+    font-family: Verdana;
+    font-size: 0.8em;
+    background: #284775;
+    padding: 0.5em;
+    text-decoration: none;
+    text-align: center;    
+    border: solid 1px #5D7B9D;
+    color: #00FFFF;
+}
+
+
+/****************************************************************************/
+/****************************************************************************/
+.PrettyCreateUserWizard
+{
+    width: 50em;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard
+{
+    font-family: Verdana;
+    font-size: 0.8em;
+    border: solid 1px #284775;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard label,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard input
+{
+    color: #5D7B9D;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard input
+{
+    font-size: 1em;  /* lets the form element scale */
+}
+
+/* This rule is used when AutoAccessKey is true */
+.PrettyCreateUserWizard .AspNet-CreateUserWizard label em
+{
+    text-decoration: underline;
+    font-style: normal;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-HeaderTextPanel
+{
+    font-weight: bold;
+    text-align: center;
+    color: #FFFFFF;
+    background: #284775;
+    height: 2em;
+    padding-top: 0.5em;
+    margin-bottom: 0.3em;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-StepTitlePanel
+{
+    font-weight: bold;
+    text-align: center;
+    color: #F7F6F3;
+    background: #5D7B9D;
+    height: 1.5em;
+    padding-top: 0.2em;
+    margin: 4px;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-InstructionPanel
+{
+    text-align: left;
+    color: #284775;
+    background: #EEEEEE;
+    padding-top: 0.5em;
+    margin: 4px;
+    border: solid 10px #EEEEEE;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-FailurePanel
+{
+    color: #FF0000;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-UserPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-PasswordPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-PasswordHintPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-ConfirmPasswordPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-EmailPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-QuestionPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-AnswerPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-FailurePanel
+{
+    padding: 0.25em 0.1em 0 0;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-UserPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-PasswordPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-ConfirmPasswordPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-EmailPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-QuestionPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-AnswerPanel
+{
+    text-align: right;
+    margin-right: 18em;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-PasswordHintPanel
+{
+    color: #666666;
+    padding-left: 30.5em;
+    padding-right: 1em;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-FinalValidatorsPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-FailurePanel
+{
+    text-align: center;
+    margin-left: 10em;
+    margin-top: 0.5em;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-UserPanel label,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-PasswordPanel label,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-ConfirmPasswordPanel label,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-EmailPanel label,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-QuestionPanel label,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-AnswerPanel label
+{
+    white-space: nowrap;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-UserPanel input,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-PasswordPanel input,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-ConfirmPasswordPanel input,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-EmailPanel input,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-QuestionPanel input,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-AnswerPanel input
+{
+    width: 9em;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-CreateUserButtonPanel,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-ContinuePanel
+{
+    text-align: right;
+    padding-right: 1em;
+    padding-bottom: 0.5em;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-CreateUserButtonPanel input,
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-ContinuePanel input
+{
+    background: #284775;
+    color: #00FFFF;
+    border: solid 1px #5D7B9D;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-SuccessTextPanel
+{
+    padding: 1em;
+    padding-top: 0.5em;
+}
+
+.PrettyCreateUserWizard .AspNet-CreateUserWizard .AspNet-CreateUserWizard-EditProfilePanel
+{
+}
+
+
+
+/****************************************************************************/
+/****************************************************************************/
+.PrettyChangePassword
+{
+    width: 28em;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword
+{
+    font-family: Verdana;
+    font-size: 0.8em;
+    padding: 4px; 
+    border: solid 1px #284775;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword label,
+.PrettyChangePassword .AspNet-ChangePassword input
+{
+    color: #5D7B9D;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword input
+{
+    font-size: 1em;  /* lets the form element scale */
+}
+
+/* This rule is used when AutoAccessKey is true */
+.PrettyChangePassword .AspNet-ChangePassword label em
+{
+    text-decoration: underline;
+    font-style: normal;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ChangePasswordTitlePanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-SuccessTitlePanel
+{
+    font-weight: bold;
+    color: #F7F6F3;
+    background: #5D7B9D;
+    text-align: center;
+    height: 1.7em;
+    margin-bottom: 0.3em;
+    padding-top: 0.4em;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-InstructionPanel
+{
+    color: #284775;
+    background: #EEEEEE;
+    padding: 1em;
+    text-align: left;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-FailurePanel
+{
+    height: 4em;
+    color: #990000;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-UserPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-PasswordPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-NewPasswordPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ConfirmNewPasswordPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-SubmitPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-CreateUserPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-PasswordRecoveryPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ContinuePanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-SuccessTextPanel
+{
+    padding: 0.25em 0.1em 0 0;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-UserPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-PasswordPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-NewPasswordPanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ConfirmNewPasswordPanel
+{
+    text-align:right;
+}
+
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-UserPanel label,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-PasswordPanel label,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-NewPasswordPanel label,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ConfirmNewPasswordPanel label,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ConfirmNewPasswordPanel span
+{
+    white-space: nowrap;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-UserPanel input,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-PasswordPanel input,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-NewPasswordPanel input,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ConfirmNewPasswordPanel input
+{
+    width: 10em;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-SubmitPanel input,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ContinuePanel input
+{
+    background: #284775;
+    color: #00FFFF;
+    border: solid 1px #5D7B9D;
+}
+
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-ContinuePanel,
+.PrettyChangePassword .AspNet-ChangePassword .AspNet-ChangePassword-SuccessTextPanel
+{
+    text-align: center;
+}
+
+
+
+/****************************************************************************/
+/****************************************************************************/
+.PrettyPasswordRecovery
+{
+    width: 28em;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery
+{
+    font-family: Verdana;
+    font-size: 0.8em;
+    padding: 4px; 
+    color: #333333;
+    border: solid 1px #284775;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery label,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery input
+{
+    color: #5D7B9D;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery input
+{
+    font-size: 1em;  /* lets the form element scale */
+}
+
+/* This rule is used when AutoAccessKey is true */
+.PrettyPasswordRecovery .AspNet-PasswordRecovery label em
+{
+    text-decoration: underline;
+    font-style: normal;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-TitlePanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-TitlePanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-InstructionPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-InstructionPanel
+{
+    text-align: center;
+    height: 1.7em;
+    margin-bottom: 0.3em;
+    padding-top: 0.4em;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-TitlePanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-TitlePanel
+{
+    font-weight: bold;
+    color: #F7F6F3;
+    background: #5D7B9D;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-InstructionPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-InstructionPanel
+{
+    color: #284775;
+    background: #EEEEEE;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-FailurePanel
+{
+    color: #FF0000;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-UserPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-UserPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-SubmitPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-SubmitPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-QuestionPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-AnswerPanel
+{
+    padding: 0.25em 0.1em 0 0;
+    text-align: right;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-UserPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-QuestionPanel
+{
+    padding-right: 1.1em;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-UserPanel label,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-UserPanel span,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-QuestionPanel span,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-AnswerPanel label
+{
+    white-space: nowrap;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-UserPanel input,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-AnswerPanel input,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-UserPanel input,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-QuestionPanel input
+{
+    width: 12em;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-UserPanel input,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-QuestionPanel input
+{
+    border: none; 
+    background: White;
+    color: #333333;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-UserName-SubmitPanel input,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-Question-SubmitPanel input
+{
+    border: solid 1px #5D7B9D;
+    background: #284775;
+    color: #00FFFF;
+}
+
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-HelpPanel,
+.PrettyPasswordRecovery .AspNet-PasswordRecovery .AspNet-PasswordRecovery-SuccessTextPanel
+{
+}
+

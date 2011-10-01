@@ -34,7 +34,28 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AjaxControlToolkit">
+      <HintPath>..\packages\AjaxControlToolkit.4.1.50731\lib\40\AjaxControlToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper">
+      <HintPath>..\packages\AutoMapper.2.0.0\lib\net40-client\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentMongo">
+      <HintPath>..\packages\FluentMongo.1.2.0.0\lib\FluentMongo.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\packages\mongocsharpdriver.1.2\lib\net35\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\packages\mongocsharpdriver.1.2\lib\net35\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoProviders">
+      <HintPath>..\lib\MongoProviders.dll</HintPath>
+    </Reference>
+    <Reference Include="SanitizerProviders">
+      <HintPath>..\packages\AjaxControlToolkit.4.1.50731\lib\40\SanitizerProviders\SanitizerProviders.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -66,8 +87,298 @@
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Site.master.cs">
+      <DependentUpon>Site.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Site.master.designer.cs">
+      <DependentUpon>Site.master</DependentUpon>
+    </Compile>
+    <Compile Include="Users\AccountRemoved.aspx.cs">
+      <DependentUpon>AccountRemoved.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\AccountRemoved.aspx.designer.cs">
+      <DependentUpon>AccountRemoved.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Active_users.aspx.cs">
+      <DependentUpon>Active_users.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Active_users.aspx.designer.cs">
+      <DependentUpon>Active_users.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Add_user.aspx.cs">
+      <DependentUpon>Add_user.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Add_user.aspx.designer.cs">
+      <DependentUpon>Add_user.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Edit_user.aspx.cs">
+      <DependentUpon>Edit_user.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Edit_user.aspx.designer.cs">
+      <DependentUpon>Edit_user.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Edit_user_modal.aspx.cs">
+      <DependentUpon>Edit_user_modal.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Edit_user_modal.aspx.designer.cs">
+      <DependentUpon>Edit_user_modal.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Edit_user_modal_success.aspx.cs">
+      <DependentUpon>Edit_user_modal_success.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Edit_user_modal_success.aspx.designer.cs">
+      <DependentUpon>Edit_user_modal_success.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Email_options.aspx.cs">
+      <DependentUpon>Email_options.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Email_options.aspx.designer.cs">
+      <DependentUpon>Email_options.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Locked_users.aspx.cs">
+      <DependentUpon>Locked_users.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Locked_users.aspx.designer.cs">
+      <DependentUpon>Locked_users.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\MasterPage.master.cs">
+      <DependentUpon>MasterPage.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\MasterPage.master.designer.cs">
+      <DependentUpon>MasterPage.master</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Online_users.aspx.cs">
+      <DependentUpon>Online_users.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Online_users.aspx.designer.cs">
+      <DependentUpon>Online_users.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Quick_contact.aspx.cs">
+      <DependentUpon>Quick_contact.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Quick_contact.aspx.designer.cs">
+      <DependentUpon>Quick_contact.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Roles.aspx.cs">
+      <DependentUpon>Roles.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Roles.aspx.designer.cs">
+      <DependentUpon>Roles.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Search_user.aspx.cs">
+      <DependentUpon>Search_user.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Search_user.aspx.designer.cs">
+      <DependentUpon>Search_user.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Users.aspx.cs">
+      <DependentUpon>Users.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Users.aspx.designer.cs">
+      <DependentUpon>Users.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Admin\Users_by_role.aspx.cs">
+      <DependentUpon>Users_by_role.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Admin\Users_by_role.aspx.designer.cs">
+      <DependentUpon>Users_by_role.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\WebProfile_orig.cs" />
+    <Compile Include="Users\CountryNames.cs" />
+    <Compile Include="Users\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Goodies\Accordion.aspx.cs">
+      <DependentUpon>Accordion.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Goodies\Accordion.aspx.designer.cs">
+      <DependentUpon>Accordion.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Goodies\CollapsablePanel.aspx.cs">
+      <DependentUpon>CollapsablePanel.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Goodies\CollapsablePanel.aspx.designer.cs">
+      <DependentUpon>CollapsablePanel.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Goodies\UsersGridView.aspx.cs">
+      <DependentUpon>UsersGridView.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Goodies\UsersGridView.aspx.designer.cs">
+      <DependentUpon>UsersGridView.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Membership.Designer.cs" />
+    <Compile Include="Users\Membership1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Membership.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Members\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Members\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Members\MyAccountInfo.aspx.cs">
+      <DependentUpon>MyAccountInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Members\MyAccountInfo.aspx.designer.cs">
+      <DependentUpon>MyAccountInfo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\RecoverPassword.aspx.cs">
+      <DependentUpon>RecoverPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\RecoverPassword.aspx.designer.cs">
+      <DependentUpon>RecoverPassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Register.aspx.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Register.aspx.designer.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\UserControls\adminFooter.ascx.cs">
+      <DependentUpon>adminFooter.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\UserControls\adminFooter.ascx.designer.cs">
+      <DependentUpon>adminFooter.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\UserControls\adminHeader.ascx.cs">
+      <DependentUpon>adminHeader.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\UserControls\adminHeader.ascx.designer.cs">
+      <DependentUpon>adminHeader.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\UserControls\adminSideNavigation.ascx.cs">
+      <DependentUpon>adminSideNavigation.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\UserControls\adminSideNavigation.ascx.designer.cs">
+      <DependentUpon>adminSideNavigation.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\UserControls\adminUserNavLinks.ascx.cs">
+      <DependentUpon>adminUserNavLinks.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\UserControls\adminUserNavLinks.ascx.designer.cs">
+      <DependentUpon>adminUserNavLinks.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\UserControls\adminUserStats.ascx.cs">
+      <DependentUpon>adminUserStats.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\UserControls\adminUserStats.ascx.designer.cs">
+      <DependentUpon>adminUserStats.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Users.master.cs">
+      <DependentUpon>Users.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Users.master.designer.cs">
+      <DependentUpon>Users.master</DependentUpon>
+    </Compile>
+    <Compile Include="Users\Verification.aspx.cs">
+      <DependentUpon>Verification.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\Verification.aspx.designer.cs">
+      <DependentUpon>Verification.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Users\WebProfile.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Themes\Default\adminDefault.css" />
+    <Content Include="App_Themes\Default\Images\a-zHover-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\about-bg-bottom.gif" />
+    <Content Include="App_Themes\Default\Images\about-bg-top.gif" />
+    <Content Include="App_Themes\Default\Images\about.jpg" />
+    <Content Include="App_Themes\Default\Images\access-rules-icon-16x16.gif" />
+    <Content Include="App_Themes\Default\Images\accordion-bg.png" />
+    <Content Include="App_Themes\Default\Images\admin-footer-2-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\admin-footer-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\admin-header-2-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\admin-header-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\admin-title-2.jpg" />
+    <Content Include="App_Themes\Default\Images\admin-title.jpg" />
+    <Content Include="App_Themes\Default\Images\bg-orange-small.jpg" />
+    <Content Include="App_Themes\Default\Images\body_bg.png" />
+    <Content Include="App_Themes\Default\Images\Calendar_schedule.gif" />
+    <Content Include="App_Themes\Default\Images\Calendar_schedule.png" />
+    <Content Include="App_Themes\Default\Images\collapse-panel-1.jpg" />
+    <Content Include="App_Themes\Default\Images\collapse-panel-2.jpg" />
+    <Content Include="App_Themes\Default\Images\collapse.jpg" />
+    <Content Include="App_Themes\Default\Images\connection-string-16x16.gif" />
+    <Content Include="App_Themes\Default\Images\delete-1.gif" />
+    <Content Include="App_Themes\Default\Images\delete-2.gif" />
+    <Content Include="App_Themes\Default\Images\Delete.gif" />
+    <Content Include="App_Themes\Default\Images\email-icon-16x16.gif" />
+    <Content Include="App_Themes\Default\Images\expand.jpg" />
+    <Content Include="App_Themes\Default\Images\folder-open.gif" />
+    <Content Include="App_Themes\Default\Images\folder.gif" />
+    <Content Include="App_Themes\Default\Images\grid-header-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\grid-header-black-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\grid-header-blue-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\grid-header-orange-bg.jpg" />
+    <Content Include="App_Themes\Default\Images\grid-row-hover.jpg" />
+    <Content Include="App_Themes\Default\Images\grid-sort-hover.jpg" />
+    <Content Include="App_Themes\Default\Images\header-bullett.gif" />
+    <Content Include="App_Themes\Default\Images\info.gif" />
+    <Content Include="App_Themes\Default\Images\members.gif" />
+    <Content Include="App_Themes\Default\Images\members.jpg" />
+    <Content Include="App_Themes\Default\Images\nav-Expand.gif" />
+    <Content Include="App_Themes\Default\Images\new-user-16x16.gif" />
+    <Content Include="App_Themes\Default\Images\plus.gif" />
+    <Content Include="App_Themes\Default\Images\roles-icon-16x16.gif" />
+    <Content Include="App_Themes\Default\Images\search-icon-16x16.gif" />
+    <Content Include="App_Themes\Default\Images\target.gif" />
+    <Content Include="App_Themes\Default\Images\target1.gif" />
+    <Content Include="App_Themes\Default\Images\user-categories-bg.gif" />
+    <Content Include="App_Themes\Default\Images\users-icon-16x16.gif" />
+    <Content Include="App_Themes\Default\Images\white-top-bottom.gif" />
+    <Content Include="App_Themes\Default\membership_controls.css" />
+    <Content Include="Content\membership_controls.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -106,7 +417,56 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\modernizr-1.7.js" />
     <Content Include="Scripts\modernizr-1.7.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Users\AccountRemoved.aspx" />
+    <Content Include="Users\Admin\access_rules.aspx" />
+    <Content Include="Users\Admin\Active_users.aspx" />
+    <Content Include="Users\Admin\Add_user.aspx" />
+    <Content Include="Users\Admin\Default.aspx" />
+    <Content Include="Users\Admin\Edit_user.aspx" />
+    <Content Include="Users\Admin\Edit_user_modal.aspx" />
+    <Content Include="Users\Admin\Edit_user_modal_success.aspx" />
+    <Content Include="Users\Admin\Email_options.aspx" />
+    <Content Include="Users\Admin\Locked_users.aspx" />
+    <Content Include="Users\Admin\Online_users.aspx" />
+    <Content Include="Users\Admin\Quick_contact.aspx" />
+    <Content Include="Users\Admin\Roles.aspx" />
+    <Content Include="Users\Admin\Search_user.aspx" />
+    <Content Include="Users\Admin\Users.aspx" />
+    <Content Include="Users\Admin\Users_by_role.aspx" />
+    <Content Include="Users\Default.aspx" />
+    <Content Include="Users\EmailTemplates\ChangePassword.htm" />
+    <Content Include="Users\EmailTemplates\CreateUserWizard.txt" />
+    <Content Include="Users\EmailTemplates\PasswordRecovery.txt" />
+    <Content Include="Users\favicon.gif" />
+    <Content Include="Users\favicon.ico" />
+    <Content Include="Users\Goodies\Accordion.aspx" />
+    <Content Include="Users\Goodies\CollapsablePanel.aspx" />
+    <Content Include="Users\Goodies\UsersGridView.aspx" />
+    <Content Include="Users\greybox\AJS.js" />
+    <Content Include="Users\greybox\AJS_fx.js" />
+    <Content Include="Users\greybox\gb_scripts.js" />
+    <Content Include="Users\greybox\gb_styles.css" />
+    <Content Include="Users\greybox\g_close.gif" />
+    <Content Include="Users\greybox\header_bg.gif" />
+    <Content Include="Users\greybox\indicator.gif" />
+    <Content Include="Users\greybox\loader_frame.html" />
+    <Content Include="Users\greybox\next.gif" />
+    <Content Include="Users\greybox\prev.gif" />
+    <Content Include="Users\greybox\w_close.gif" />
+    <Content Include="Users\Login.aspx" />
+    <Content Include="Users\Members\Default.aspx" />
+    <Content Include="Users\Members\MyAccountInfo.aspx" />
+    <Content Include="Users\RecoverPassword.aspx" />
+    <Content Include="Users\Register.aspx" />
+    <Content Include="Users\UserControls\adminFooter.ascx" />
+    <Content Include="Users\UserControls\adminHeader.ascx" />
+    <Content Include="Users\UserControls\adminSideNavigation.ascx" />
+    <Content Include="Users\UserControls\adminUserNavLinks.ascx" />
+    <Content Include="Users\UserControls\adminUserStats.ascx" />
+    <Content Include="Users\Verification.aspx" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -127,12 +487,12 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Account\ChangePasswordSuccess.cshtml" />
-    <Content Include="Views\Account\LogOn.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_LogOnPartial.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
   </ItemGroup>
@@ -141,6 +501,28 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Users\Admin\MasterPage.master" />
+    <Content Include="Users\Admin\web.config" />
+    <Content Include="Users\Goodies\web.config" />
+    <Content Include="connectionStrings.debug.config" />
+    <Content Include="Site.master" />
+    <Content Include="App_Themes\Default\adminDefault.skin" />
+    <None Include="Users\Membership.xsc">
+      <DependentUpon>Membership.xsd</DependentUpon>
+    </None>
+    <None Include="Users\Membership.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Membership1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Users\Membership.xss">
+      <DependentUpon>Membership.xsd</DependentUpon>
+    </None>
+    <Content Include="Users\Members\web.config" />
+    <Content Include="Users\Users.master" />
+    <Content Include="Views\Home\AfterLogin.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

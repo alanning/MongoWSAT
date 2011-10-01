@@ -19,5 +19,12 @@ namespace MongoWSAT.Controllers
         {
             return View();
         }
+
+        public ActionResult AfterLogin()
+        {
+            ViewBag.Message = "Thanks for using MongoWSAT!";
+
+            return View();
+        }
     }
 }

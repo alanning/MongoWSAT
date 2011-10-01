@@ -1,0 +1,82 @@
+﻿<%--
+Default skin template. The following skins are provided as examples only.
+
+1. Named control skin. The SkinId should be uniquely defined because
+   duplicate SkinId's per control type are not allowed in the same theme.
+
+<asp:GridView runat="server" SkinId="gridviewSkin" BackColor="White" >
+   <AlternatingRowStyle BackColor="Blue" />
+</asp:GridView>
+
+2. Default skin. The SkinId is not defined. Only one default 
+   control skin per control type is allowed in the same theme.
+
+<asp:Image runat="server" ImageUrl="~/images/image1.jpg" />
+--%>
+
+<%-- GridView Default Skin --%>
+<asp:GridView runat="server" CssClass="gridviewMain" AutoGenerateColumns="False" AllowSorting="True">
+    <RowStyle CssClass="gridRowStyle" />
+    <SelectedRowStyle CssClass="gridrowSelectedBG" />
+    <HeaderStyle CssClass="gridheaderBG" />
+    <AlternatingRowStyle CssClass="gridAlternateRowStyle" />
+    <PagerStyle CssClass="membersGridViewPager2" BorderWidth="0px" />
+</asp:GridView>
+
+<%-- GridView Skin 2 --%>
+<asp:GridView runat="server" SkinID="GridWithFooter" ShowFooter="True" CssClass="gridviewMain" AutoGenerateColumns="False" Width="400px" AllowSorting="True">
+    <RowStyle CssClass="gridRowStyle" />
+    <SelectedRowStyle CssClass="gridrowSelectedBG" />
+    <HeaderStyle CssClass="gridheaderBG" />
+    <AlternatingRowStyle CssClass="gridAlternateRowStyle" />
+    <PagerStyle CssClass="membersGridViewPager2" BorderWidth="0px" />
+</asp:GridView>
+
+<%-- DetailsView Default Skin --%>
+<asp:DetailsView runat="server" CssClass="detailsviewMain" AutoGenerateRows="False">
+    <RowStyle CssClass="detailsviewRowStyle" />
+    <FieldHeaderStyle CssClass="detailsviewFieldHeader" />
+    <HeaderStyle CssClass="detailsviewheaderBG" />
+    <AlternatingRowStyle CssClass="detailsviewAlternateRowStyle" />
+</asp:DetailsView>
+
+<%-- CreateUserWizard Default Skin --%>
+<asp:CreateUserWizard runat="server" BackColor="#FCFCFC" BorderColor="#E9E9EF" BorderStyle="Solid" BorderWidth="1px" Font-Size="11px" width="400px">
+    <SideBarStyle BackColor="#5D7B9D" BorderWidth="0px" Font-Size="12px" VerticalAlign="Top" />
+    <SideBarButtonStyle BorderWidth="0px" Font-Names="Verdana" ForeColor="White" />
+    <HeaderStyle CssClass="gridheaderBG" Font-Italic="False" Font-Size="14px" HorizontalAlign="Center" Height="22px" />
+    <TitleTextStyle BackColor="#F3F3F3" Font-Bold="false" ForeColor="#000000" Font-Size="12px" HorizontalAlign="Left" />
+    <StepStyle BorderWidth="0px" />
+    <ContinueButtonStyle Font-Size="11px" />
+    <CreateUserButtonStyle Font-Size="11px" />
+</asp:CreateUserWizard>
+
+<%-- asp:button default skin --%>
+<asp:Button runat="server" Font-Size="11px" />
+
+<%-- login control default skin --%>
+<asp:Login runat="server" BackColor="#FCFCFC" BorderColor="#E9E9EF" BorderPadding="10" BorderStyle="Solid" BorderWidth="1px" Font-Size="0.8em" ForeColor="#333333" width="250px">
+    <TextBoxStyle Font-Size="0.8em" />
+    <LoginButtonStyle BackColor="White" BorderColor="#507CD1" BorderStyle="Solid" BorderWidth="1px" Font-Names="Verdana" Font-Size="0.8em" ForeColor="#284E98" />
+    <InstructionTextStyle Font-Italic="True" ForeColor="Black" />
+    <TitleTextStyle BackColor="#507CD1" Font-Bold="True" Font-Size="0.9em" ForeColor="White" />
+</asp:Login>
+
+<%-- password recovery default skin --%>
+<asp:PasswordRecovery runat="server" BackColor="#FCFCFC" BorderColor="#E9E9EF" BorderPadding="10" BorderStyle="Solid" BorderWidth="1px" Font-Size="11px" ForeColor="#333333" width="300px">
+    <InstructionTextStyle Font-Italic="True" ForeColor="Black" />
+    <SuccessTextStyle Font-Bold="True" ForeColor="#5D7B9D" />
+    <TitleTextStyle BackColor="#F3F3F3" Font-Size="12px" />
+    <SubmitButtonStyle Font-Size="10px" />
+</asp:PasswordRecovery>
+
+<%-- password recovery default skin --%>
+<asp:ChangePassword runat="server" BackColor="#FCFCFC" BorderColor="#E9E9EF" BorderPadding="10" BorderStyle="Solid" BorderWidth="1px" Font-Size="11px" ForeColor="#333333">
+    <CancelButtonStyle Font-Size="10px" />
+    <PasswordHintStyle Font-Italic="True" ForeColor="#888888" />
+    <ContinueButtonStyle Font-Size="10px" />
+    <ChangePasswordButtonStyle Font-Size="10px" />
+    <TitleTextStyle BackColor="#F3F3F3" Font-Size="11px" />
+    <TextBoxStyle Font-Size="11px" />
+    <InstructionTextStyle Font-Italic="True" ForeColor="Black" />
+</asp:ChangePassword>
