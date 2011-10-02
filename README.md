@@ -17,13 +17,12 @@ Motivation
 
 Provide a quick way to administer users for ASP.NET websites (both MVC and WebForms) which use MongoDB rather than Sql Server.
 
-ASP.NET MVC sites can use ASP.NET pages without issue so Hunzonian's MyWSAT Website Starter Kit offers a great way to get up and running quickly. But MyWSAT is closely tied to SQL Server.  
+ASP.NET MVC sites can use ASP.NET pages without issue so Hunzonian's [MyWSAT][1] offers a great way to get up and running quickly. But MyWSAT is closely tied to SQL Server.  
 This project is a port of an older version of the MyWSAT Starter Kit which was not so closely tied to Sql Server.
 
 Converting this project to use a NoSQL data store other than Mongo should be fairly straightforward.  The only place that explicitly relies on Mongo now is the WebProfile class.
 
-  MyWSAT
-  http://mywsat.codeplex.com/
+[1]: http://mywsat.codeplex.com/ "MyWSAT Website Starter Kit"
 
 
 License
@@ -36,8 +35,8 @@ Dependencies
 ------------
 
 All dependencies are included.
-  MongoProviders - https://github.com/alanning/MongoProviders
-  NUnit - NuGet
+* MongoProviders - https://github.com/alanning/MongoProviders
+* NUnit - NuGet
 
 
 Conventions
