@@ -10,7 +10,9 @@ Usage
   1. Add MongoWSAT to your web project (MVC or WebForms) using Nuget
   2. Add relevant sections from 'example_web.config' and 'example_global.asax' files
   3. Point browser to 'Users/Default.aspx' and follow instructions to create the default admin account and role
-
+  4. Decide whether to use Members/MyAccountInfo.aspx page for User self-management of Password, Profile, and Email.  If not, remove the Members/* pages.
+  5. Decide whether to use Login.aspx, Register.aspx, and RecoverPassword.aspx.  Remove if unused.
+     
 
 Motivation
 ----------
@@ -42,13 +44,15 @@ All dependencies are included.
 * Mongo Csharp Drivers - NuGet
 
 
-Conventions
------------
+Notes
+-----
 
 * The WebProfile class inherits from MongoProviders.User and saves its data into the same collection the MembershipProvider uses to save User data.
 * The MembershipProvider and RoleProvider are optimized for Mongo and combine the ApplicationName into the CollectionName.  This saves us from having to include the ApplicationName in every query and also relieves us from having to include ApplicationName in the indexes. To query the collections from the Mongo Interactive Shell, run queries like so:  
 `> db['/users'].find()`
 * The RoleProvider stores all roles as lowercase.  This is done to prevent someone from creating an "Administrator" role while someone else creates an "administrator" role.
+* Login, Register, ChangePassword, RetrievePassword can all be done using either MVC or WebForms. But MVC and WebForms pages can not share masterpages so make sure to make them match if mixing.
+* Users/Register.aspx uses email verification to 'activate' new users.
 
 
 Changes from MyWSAT
