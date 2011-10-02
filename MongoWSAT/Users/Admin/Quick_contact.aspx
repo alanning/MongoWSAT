@@ -130,15 +130,6 @@
     </asp:GridView> 
     
     <%-- object datasource  --%>
-    <%--
-    <asp:ObjectDataSource ID="objUserByEmail" runat="server" OldValuesParameterFormatString="original_{0}" 
-        SelectMethod="GetByUserName" TypeName="DataSet1TableAdapters.aspnet_MembershipTableAdapter">
-        <SelectParameters>
-            <asp:QueryStringParameter Name="QueryLetter" QueryStringField="letter" Type="String" />
-        </SelectParameters>
-    </asp:ObjectDataSource> 
-    --%>
-    
     <asp:ObjectDataSource ID="UsersList" runat="server" DataObjectTypeName="System.Web.Security.MembershipUser"
         SelectMethod="FindUsersByEmail" TypeName="System.Web.Security.Membership">
         <SelectParameters>

@@ -136,13 +136,6 @@
     <Compile Include="Users\Admin\Edit_user_modal_success.aspx.designer.cs">
       <DependentUpon>Edit_user_modal_success.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Users\Admin\Email_options.aspx.cs">
-      <DependentUpon>Email_options.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Users\Admin\Email_options.aspx.designer.cs">
-      <DependentUpon>Email_options.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Users\Admin\Locked_users.aspx.cs">
       <DependentUpon>Locked_users.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -235,12 +228,6 @@
     </Compile>
     <Compile Include="Users\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Users\Membership.Designer.cs" />
-    <Compile Include="Users\Membership1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Membership.xsd</DependentUpon>
     </Compile>
     <Compile Include="Users\Members\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -417,7 +404,6 @@
     <Content Include="Users\Admin\Edit_user.aspx" />
     <Content Include="Users\Admin\Edit_user_modal.aspx" />
     <Content Include="Users\Admin\Edit_user_modal_success.aspx" />
-    <Content Include="Users\Admin\Email_options.aspx" />
     <Content Include="Users\Admin\Locked_users.aspx" />
     <Content Include="Users\Admin\Online_users.aspx" />
     <Content Include="Users\Admin\Quick_contact.aspx" />
@@ -501,17 +487,6 @@
     <Content Include="connectionStrings.debug.config" />
     <Content Include="Site.master" />
     <Content Include="App_Themes\Default\adminDefault.skin" />
-    <None Include="Users\Membership.xsc">
-      <DependentUpon>Membership.xsd</DependentUpon>
-    </None>
-    <None Include="Users\Membership.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>Membership1.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Users\Membership.xss">
-      <DependentUpon>Membership.xsd</DependentUpon>
-    </None>
     <Content Include="Users\Members\web.config" />
     <Content Include="Users\Users.master" />
     <Content Include="Views\Home\AfterLogin.cshtml" />
