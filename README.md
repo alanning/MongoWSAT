@@ -35,8 +35,11 @@ Dependencies
 ------------
 
 All dependencies are included.
+
 * MongoProviders - https://github.com/alanning/MongoProviders
-* NUnit - NuGet
+* AjaxControlToolkit - NuGet
+* FluentMongo - NuGet
+* Mongo Csharp Drivers - NuGet
 
 
 Conventions
