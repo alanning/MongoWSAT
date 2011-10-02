@@ -192,7 +192,6 @@
     <Compile Include="Users\Admin\Users_by_role.aspx.designer.cs">
       <DependentUpon>Users_by_role.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Users\WebProfile_orig.cs" />
     <Compile Include="Users\CountryNames.cs" />
     <Compile Include="Users\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
