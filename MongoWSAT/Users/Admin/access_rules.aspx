@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Admin/MasterPage.master" Title="Site Access Rules" ValidateRequest="false" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/Users/Admin/MasterPage.master" Title="Site Access Rules" ValidateRequest="false" %>
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="System.IO" %>
 <%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="cc1" %>
