@@ -34,3 +34,23 @@ All dependencies are included.
   NUnit - NuGet
 
 
+
+
+Changes from MyWSAT
+
+1. Use Mongo Membership and Role Providers
+   <insert config sections>
+
+2. Replace FCKEditor with Ajax Control Toolkit Html Editor Extender
+
+3. Change membership provider name to non-sql name (WSATSqlMembershipProviderAdmin -> MembershipProviderAdmin)
+
+4. Enable usage of Hashed passwords.  MyWSAT assumes password retrieval is enabled which is not possible with hashed passwords.
+
+5. Convert from using Profile Provider to using serialized class
+
+6. Convert from using Membership.xsd table adapter to using Membership provider
+
+7. Make Dashboard default to showing Users by Name
+
+8. Remove usage of database for storing SMTP server and email From addresses in Quick_contact.aspx.cs
