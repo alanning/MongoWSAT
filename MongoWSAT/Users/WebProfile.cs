@@ -13,6 +13,74 @@ using System.Web;
 using System.Web.Profile;
 using System.Configuration;
 using AutoMapper;
+using System.Web.Security;
+using MongoDB.Driver;
+using MongoDB.Driver.Builders;
+using System.Linq;
+using FluentMongo.Linq;
+using MongoDB.Bson.Serialization;
+
+
+public class WebProfile : MongoProviders.User
+{
+    public static bool initialized = WebProfileMap.Register();
+
+    public class WebProfileMap
+    {
+        public static bool Register()
+        {
+            if (!BsonClassMap.IsClassMapRegistered(typeof(WebProfile)))
+            {
+                MongoProviders.UserClassMap.Register();
+
+                BsonClassMap.RegisterClassMap<WebProfile>(cm => 
+                {
+                    cm.AutoMap();
+                    cm.SetIgnoreExtraElements(true);
+                    cm.GetMemberMap(c => c.LastUpdatedDate).SetElementName("moddate");
+                });
+            }
+            return true;
+        }
+    }
+    
+    public WebProfile()
+    {
+        Contacts = new ProfileContacts();
+        Address = new ProfileAddress();
+        Personal = new ProfilePersonal();
+        Preferences = new ProfilePreferences();
+    }
+
+    public static WebProfile Get(string username)
+    {
+        var mongoMembership = (MongoProviders.MembershipProvider)Membership.Provider;
+        var profiles = mongoMembership.Database.GetCollection<WebProfile>(mongoMembership.CollectionName);
+
+        var profile = profiles.AsQueryable().Where(p => p.LowercaseUsername == username.ToLowerInvariant()).FirstOrDefault();
+        return profile;
+    }
+
+    public virtual System.DateTime LastUpdatedDate { get; set; }
+    
+    public virtual ProfileContacts Contacts { get; set; }
+    
+    public virtual ProfileAddress Address { get; set; }
+    
+    public virtual ProfilePersonal Personal { get; set; }
+   
+    public virtual ProfilePreferences Preferences { get; set; }
+    
+    public virtual void Save() {
+
+        var mongoMembership = (MongoProviders.MembershipProvider)Membership.Provider;
+        var profiles = mongoMembership.Database.GetCollection<WebProfile>(mongoMembership.CollectionName);
+
+        LastUpdatedDate = DateTime.UtcNow;
+        profiles.Save(this);
+    }
+    
+}
 
 
 public class ProfileContacts {
@@ -80,41 +148,5 @@ public class ProfilePreferences {
     public virtual string Theme { get; set; }
     
     public virtual string Newsletter { get; set; }
-    
-}
-
-public class WebProfile {
-    
-    public WebProfile() {
-        Contacts = new ProfileContacts();
-        Address = new ProfileAddress();
-        Personal = new ProfilePersonal();
-        Preferences = new ProfilePreferences();
-    }
-
-    public static WebProfile Get(string username)
-    {
-        return new WebProfile();
-    }
-
-    public virtual string Username { get; set; }
-    
-    public virtual bool IsAnonymous { get; set; }
-    
-    public virtual System.DateTime LastActivityDate { get; set; }
-    
-    public virtual System.DateTime LastUpdatedDate { get; set; }
-    
-    public virtual ProfileContacts Contacts { get; set; }
-    
-    public virtual ProfileAddress Address { get; set; }
-    
-    public virtual ProfilePersonal Personal { get; set; }
-   
-    public virtual ProfilePreferences Preferences { get; set; }
-    
-    public virtual void Save() {
-        throw new NotImplementedException();
-    }
     
 }

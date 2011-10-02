@@ -1,15 +1,19 @@
 MongoWSAT
+=========
 
-An ASP.NET MVC project with a pre-configured admin section using MongoDB Membership and Role Providers.
-
-
-Usage:
-
-* Add MongoWSAT to your web project (MVC or WebForms) using Nuget
-* Point browser to 'Users/Default.aspx' and follow instructions to create the default admin account and role
+A pre-configured user administration section for ASP.NET websites (both MVC and WebForms) using MongoDB Membership and Role Providers.
 
 
-Motivation:
+Usage
+-----
+
+  1. Add MongoWSAT to your web project (MVC or WebForms) using Nuget
+  2. Add relevant sections from 'example_web.config' and 'example_global.asax' files
+  3. Point browser to 'Users/Default.aspx' and follow instructions to create the default admin account and role
+
+
+Motivation
+----------
 
 Provide a quick way to administer users for ASP.NET websites (both MVC and WebForms) which use MongoDB rather than Sql Server.
 
@@ -22,21 +26,30 @@ Converting this project to use a NoSQL data store other than Mongo should be fai
   http://mywsat.codeplex.com/
 
 
-License:
+License
+-------
 
-  LGPL - The WSAT code is largely unchanged from Hunzonian's original version and retains the original LGPL license.
+  LGPL - The WSAT code is largely unchanged from Hunzonian's earlier version and retains the original LGPL license.
 
 
-Dependencies:
+Dependencies
+------------
 
 All dependencies are included.
   MongoProviders - https://github.com/alanning/MongoProviders
   NUnit - NuGet
 
 
+Conventions
+-----------
+
+* The WebProfile class inherits from MongoProviders.User and saves its data into the same collection the MembershipProvider uses to save User data.
+* The MembershipProvider and RoleProvider are optimized for Mongo and combine the ApplicationName into the CollectionName.  This saves us from having to include the ApplicationName in every query and also relieves us from having to include ApplicationName in the indexes. To query the collections from the Mongo Interactive Shell, run queries like so:  `> db['/users'].find()`
+* The RoleProvider stores all roles as lowercase.  This is done to prevent someone from creating an "Administrator" role while someone else creates an "administrator" role.
 
 
 Changes from MyWSAT
+-------------------
 
 1. Use Mongo Membership and Role Providers
    <insert config sections>
