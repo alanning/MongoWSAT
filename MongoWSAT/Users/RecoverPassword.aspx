@@ -7,7 +7,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="content" runat="Server">
     <%-- password recovery control --%>
     <asp:PasswordRecovery ID="PasswordRecovery1" runat="server" OnSendingMail="PasswordRecovery1_SendingMail">
-        <MailDefinition BodyFileName="~/Users/EmailTemplates/PasswordRecovery.txt" Subject="Core Plus Software password recovery">
+        <MailDefinition BodyFileName="~/Users/EmailTemplates/PasswordRecovery.txt" Subject="Password recovery">
         </MailDefinition>
         <UserNameTemplate>
             <table border="0" cellpadding="10" cellspacing="0" 

@@ -93,13 +93,13 @@ public partial class Admin_Quick_contact {
     protected global::System.Web.UI.WebControls.GridView GridView1;
     
     /// <summary>
-    /// objUserByEmail control.
+    /// UsersList control.
     /// </summary>
     /// <remarks>
     /// Auto-generated field.
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
-    protected global::System.Web.UI.WebControls.ObjectDataSource objUserByEmail;
+    protected global::System.Web.UI.WebControls.ObjectDataSource UsersList;
     
     /// <summary>
     /// txb_Subject control.
@@ -120,13 +120,13 @@ public partial class Admin_Quick_contact {
     protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator3;
     
     /// <summary>
-    /// drp_MailFrom control.
+    /// txtMailFrom control.
     /// </summary>
     /// <remarks>
     /// Auto-generated field.
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
-    protected global::System.Web.UI.WebControls.DropDownList drp_MailFrom;
+    protected global::System.Web.UI.WebControls.TextBox txtMailFrom;
     
     /// <summary>
     /// Button1 control.
@@ -138,15 +138,6 @@ public partial class Admin_Quick_contact {
     protected global::System.Web.UI.WebControls.Button Button1;
     
     /// <summary>
-    /// objSource_EmailFrom control.
-    /// </summary>
-    /// <remarks>
-    /// Auto-generated field.
-    /// To modify move field declaration from designer file to code-behind file.
-    /// </remarks>
-    protected global::System.Web.UI.WebControls.ObjectDataSource objSource_EmailFrom;
-    
-    /// <summary>
     /// ValidationSummary1 control.
     /// </summary>
     /// <remarks>
@@ -154,7 +145,7 @@ public partial class Admin_Quick_contact {
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
     protected global::System.Web.UI.WebControls.ValidationSummary ValidationSummary1;
-
+    
     /// <summary>
     /// WYSIWYGEditor_EmailBody control.
     /// </summary>

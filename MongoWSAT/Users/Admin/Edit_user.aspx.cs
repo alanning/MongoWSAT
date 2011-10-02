@@ -57,7 +57,7 @@ public partial class Admin_Edit_user : System.Web.UI.Page
         username = Request.QueryString["username"];
         if (username == null || username == "")
         {
-            Response.Redirect("users.aspx");
+            Response.Redirect("default.aspx");
         }
 
         // get membership user account based on username sent in query string
@@ -260,7 +260,7 @@ public partial class Admin_Edit_user : System.Web.UI.Page
         // Membership.DeleteUser(username, false);
         ProfileManager.DeleteProfile(username);
         System.Web.Security.Membership.DeleteUser(username, true);
-        Response.Redirect("users.aspx");
+        Response.Redirect("default.aspx");
     }
 
 #endregion
@@ -308,7 +308,7 @@ public partial class Admin_Edit_user : System.Web.UI.Page
         username = Request.QueryString["username"];
         if (username == null || username == "")
         {
-            Response.Redirect("users.aspx");
+            Response.Redirect("default.aspx");
         }
 
         MembershipUser u = System.Web.Security.Membership.GetUser(username);

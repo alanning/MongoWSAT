@@ -1,7 +1,7 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="True" Inherits="UserControls_adminUserNavLinks" Codebehind="adminUserNavLinks.ascx.cs" %>
 
 <div class="userCategories">
-<a href="users.aspx">Users by Name</a>
+<a href="default.aspx">Users by Name</a>
 </div>
 
 <div class="userCategories">

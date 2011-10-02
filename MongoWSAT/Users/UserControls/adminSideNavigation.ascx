@@ -15,10 +15,7 @@
             </Header>
             <Content>
                 <div class="accordionLink">
-                    <a href="default.aspx">Dashboard</a>
-                </div>
-                <div class="accordionLink">
-                    <a href="users.aspx">Registered Users</a>
+                    <a href="default.aspx">Registered Users</a>
                 </div>
                 <div class="accordionLink">
                     <a href="add_user.aspx">Add New Users</a>

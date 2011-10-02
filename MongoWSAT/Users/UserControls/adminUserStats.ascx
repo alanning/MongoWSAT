@@ -2,7 +2,7 @@
 
 <div class="whosOnlineWrap">
 
-<a href="Users.aspx" title="The total number of registered users">Registered Users: <asp:Literal runat="server" ID="lblTotalUsers" /></a>
+<a href="default.aspx" title="The total number of registered users">Registered Users: <asp:Literal runat="server" ID="lblTotalUsers" /></a>
 
 &nbsp;
 

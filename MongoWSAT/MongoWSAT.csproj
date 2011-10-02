@@ -115,13 +115,6 @@
     <Compile Include="Users\Admin\Add_user.aspx.designer.cs">
       <DependentUpon>Add_user.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Users\Admin\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Users\Admin\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Users\Admin\Edit_user.aspx.cs">
       <DependentUpon>Edit_user.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -192,12 +185,12 @@
     <Compile Include="Users\Admin\Search_user.aspx.designer.cs">
       <DependentUpon>Search_user.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Users\Admin\Users.aspx.cs">
-      <DependentUpon>Users.aspx</DependentUpon>
+    <Compile Include="Users\Admin\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Users\Admin\Users.aspx.designer.cs">
-      <DependentUpon>Users.aspx</DependentUpon>
+    <Compile Include="Users\Admin\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Users\Admin\Users_by_role.aspx.cs">
       <DependentUpon>Users_by_role.aspx</DependentUpon>
@@ -421,7 +414,6 @@
     <Content Include="Users\Admin\access_rules.aspx" />
     <Content Include="Users\Admin\Active_users.aspx" />
     <Content Include="Users\Admin\Add_user.aspx" />
-    <Content Include="Users\Admin\Default.aspx" />
     <Content Include="Users\Admin\Edit_user.aspx" />
     <Content Include="Users\Admin\Edit_user_modal.aspx" />
     <Content Include="Users\Admin\Edit_user_modal_success.aspx" />
@@ -431,7 +423,7 @@
     <Content Include="Users\Admin\Quick_contact.aspx" />
     <Content Include="Users\Admin\Roles.aspx" />
     <Content Include="Users\Admin\Search_user.aspx" />
-    <Content Include="Users\Admin\Users.aspx" />
+    <Content Include="Users\Admin\Default.aspx" />
     <Content Include="Users\Admin\Users_by_role.aspx" />
     <Content Include="Users\Default.aspx" />
     <Content Include="Users\EmailTemplates\ChangePassword.htm" />

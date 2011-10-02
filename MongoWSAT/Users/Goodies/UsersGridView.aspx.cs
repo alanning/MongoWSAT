@@ -114,7 +114,7 @@ public partial class Goodies_UsersGridView : System.Web.UI.Page
         ProfileManager.DeleteProfile(userName);
         Membership.DeleteUser(userName);
 
-        //Response.Redirect("Users.aspx");
+        //Response.Redirect("default.aspx");
         lblDeleteSuccess.Visible = true;
     }
 
@@ -156,7 +156,7 @@ public partial class Goodies_UsersGridView : System.Web.UI.Page
                 ProfileManager.DeleteProfile(userName);
                 Membership.DeleteUser(userName);
 
-                //Response.Redirect("Users.aspx");
+                //Response.Redirect("default.aspx");
                 lblDeleteSuccess.Visible = true;
             }
         }

@@ -57,7 +57,7 @@ public partial class Admin_Edit_user_modal : System.Web.UI.Page
         username = Request.QueryString["username"];
         if (username == null || username == "")
         {
-            Response.Redirect("users.aspx");
+            Response.Redirect("default.aspx");
         }
 
         // get membership user account based on username sent in query string
@@ -322,7 +322,7 @@ public partial class Admin_Edit_user_modal : System.Web.UI.Page
         username = Request.QueryString["username"];
         if (username == null || username == "")
         {
-            Response.Redirect("users.aspx");
+            Response.Redirect("default.aspx");
         }
 
         MembershipUser u = Membership.GetUser(username);

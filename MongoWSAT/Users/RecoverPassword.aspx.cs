@@ -9,7 +9,7 @@ public partial class RecoverPassword : System.Web.UI.Page
     // we could have done this from the MailDefinitions property window but it was more fun this way
     protected void PasswordRecovery1_SendingMail(object sender, MailMessageEventArgs e)
     {
-        e.Message.CC.Add("postmaster@coreplussoftware.com");
+        // e.Message.CC.Add("postmaster@mycompany.com");
     }
 
 #endregion

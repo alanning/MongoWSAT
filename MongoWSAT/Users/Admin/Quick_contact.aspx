@@ -68,7 +68,7 @@
         <asp:Button ID="btnSendEmail" runat="server" Font-Size="10px" Text="Send Email" OnClick="btnSendEmail_Click" ToolTip="Click to send email. Remember to select at least one recipient checkbox!" />
         <asp:Button ID="btnSelectAll" runat="server" Font-Size="10px" Text="Check All" CausesValidation="False" onclick="btnSelectAll_Click" ToolTip="Click to select all checkboxes visible on page." />
         <asp:Button ID="btnUnselectAll" runat="server" Font-Size="10px" Text="Uncheck All" CausesValidation="False" onclick="btnUnselectAll_Click" ToolTip="Click to uncheck all checkboxes." />
-        <asp:Button ID="btn_EmailOptions" runat="server" CausesValidation="False" Font-Size="10px" PostBackUrl="~/Users/Admin/email_options.aspx" Text="Options" ToolTip="Click to configure SMTP and FROM email addresses." />
+        <%-- <asp:Button ID="btn_EmailOptions" runat="server" CausesValidation="False" Font-Size="10px" PostBackUrl="~/Users/Admin/email_options.aspx" Text="Options" ToolTip="Click to configure SMTP and FROM email addresses." />--%>
         <asp:RadioButtonList ID="rbt_BodyTextType" runat="server" RepeatDirection="Horizontal" RepeatLayout="Flow" Style="font-size: xx-small; color: #000000;" ToolTip="HTML or Palin Text Email?">
             <asp:ListItem Selected="True" Value="True">html</asp:ListItem>
             <asp:ListItem Value="False">plain text</asp:ListItem>
@@ -82,7 +82,7 @@
     </div>
     
     <%-- gridview to display users by email  --%>
-    <asp:GridView ID="GridView1" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataSourceID="objUserByEmail" DataKeyNames="LoweredEmail" PageSize="8" EmptyDataText="No records found for the indicated search. Try another letter or create users first.">
+    <asp:GridView ID="GridView1" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataSourceID="UsersList" DataKeyNames="Email" PageSize="8" EmptyDataText="No records found for the indicated search. Try another letter or create users first.">
         <PagerSettings Mode="NumericFirstLast" FirstPageText="&amp;lt;&amp;lt; First" 
             LastPageText="&amp;gt;&amp;gt; Last" NextPageText="&amp;gt; Next" 
             PreviousPageText="&amp;lt; Previous" />
@@ -97,21 +97,21 @@
                 </ItemTemplate>
                 <ItemStyle Width="25px" HorizontalAlign="Center" />
             </asp:TemplateField>
-            <asp:TemplateField HeaderText="User Name" SortExpression="LoweredUserName">
+            <asp:TemplateField HeaderText="User Name" SortExpression="UserName">
                 <EditItemTemplate>
-                    <asp:TextBox ID="TextBox2" runat="server" Text='<%# Bind("LoweredUserName") %>'></asp:TextBox>
+                    <asp:TextBox ID="TextBox2" runat="server" Text='<%# Bind("UserName") %>'></asp:TextBox>
                 </EditItemTemplate>
                 <ItemTemplate>
-                    <a href='edit_user_modal.aspx?username=<%# Eval("LoweredUserName") %>' rel="gb_page_center[525, 600]" title="Edit User Details"><%# Eval("LoweredUserName")%></a>
+                    <a href='edit_user_modal.aspx?username=<%# Eval("UserName") %>' rel="gb_page_center[525, 600]" title="Edit User Details"><%# Eval("UserName")%></a>
                 </ItemTemplate>
                 <HeaderStyle CssClass="gridColumnHeaderBG" />
             </asp:TemplateField>
-            <asp:TemplateField HeaderText="User Email" SortExpression="LoweredEmail">
+            <asp:TemplateField HeaderText="User Email" SortExpression="Email">
                 <EditItemTemplate>
-                    <asp:TextBox ID="TextBox1" runat="server" Text='<%# Bind("LoweredEmail") %>'></asp:TextBox>
+                    <asp:TextBox ID="TextBox1" runat="server" Text='<%# Bind("Email") %>'></asp:TextBox>
                 </EditItemTemplate>
                 <ItemTemplate>
-                    <a href='Mailto:<%# Eval("LoweredEmail") %>' title="click to email from your computer"><%#Eval("LoweredEmail")%></a>
+                    <a href='Mailto:<%# Eval("Email") %>' title="click to email from your computer"><%#Eval("Email")%></a>
                 </ItemTemplate>
                 <HeaderStyle CssClass="gridColumnHeaderBG" />
             </asp:TemplateField>
@@ -123,55 +123,63 @@
                 <HeaderStyle CssClass="gridColumnHeaderBG" />
                 <ItemStyle HorizontalAlign="Center" />
             </asp:CheckBoxField>
-            <asp:BoundField DataField="CreateDate" HeaderText="Creation Date" SortExpression="CreateDate" >
+            <asp:BoundField DataField="CreationDate" HeaderText="Creation Date" SortExpression="CreationDate" >
                 <HeaderStyle CssClass="gridColumnHeaderBG" />
             </asp:BoundField>
         </Columns>
     </asp:GridView> 
     
     <%-- object datasource  --%>
-    <asp:ObjectDataSource ID="objUserByEmail" runat="server" OldValuesParameterFormatString="original_{0}" SelectMethod="GetByUserName" TypeName="DataSet1TableAdapters.aspnet_MembershipTableAdapter">
+    <%--
+    <asp:ObjectDataSource ID="objUserByEmail" runat="server" OldValuesParameterFormatString="original_{0}" 
+        SelectMethod="GetByUserName" TypeName="DataSet1TableAdapters.aspnet_MembershipTableAdapter">
         <SelectParameters>
             <asp:QueryStringParameter Name="QueryLetter" QueryStringField="letter" Type="String" />
         </SelectParameters>
-    </asp:ObjectDataSource>
+    </asp:ObjectDataSource> 
+    --%>
     
+    <asp:ObjectDataSource ID="UsersList" runat="server" DataObjectTypeName="System.Web.Security.MembershipUser"
+        SelectMethod="FindUsersByEmail" TypeName="System.Web.Security.Membership">
+        <SelectParameters>
+            <asp:QueryStringParameter Name="emailToMatch" QueryStringField="letter" Type="String" />
+        </SelectParameters>
+    </asp:ObjectDataSource>
+
     <%-- email header 2  --%> 
     <div class="EmailHeader2">
     <table cellpadding="3" cellspacing="0" style="width: 100%;">
         <tr>
             <td style="font-size: xx-small; color: #000000; width: 35px;">
+                From:
+            </td>
+            <td>
+                <asp:TextBox ID="txtMailFrom" runat="server" Width="50%" MaxLength="100"></asp:TextBox>
+                <asp:RequiredFieldValidator ID="rfvReturnAddress" runat="server" ErrorMessage="From address is required!" ControlToValidate="txtMailFrom" Display="Dynamic" EnableViewState="False" >*</asp:RequiredFieldValidator>
+                <%-- <asp:Button ID="Button1" runat="server" CausesValidation="False" Font-Size="10px" PostBackUrl="~/Users/Admin/email_options.aspx" Text="edit" Width="30px" ToolTip="Click to configure SMTP and FROM email addresses." />--%>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size: xx-small; color: #000000; width: 35px;">
                 Subject:
             </td>
             <td>
-                <asp:TextBox ID="txb_Subject" runat="Server" Width="58%" ToolTip="Type a subject for this email. Subject cannot be left empty.">hello world</asp:TextBox>
+                <asp:TextBox ID="txb_Subject" runat="Server" Width="50%" ToolTip="Type a subject for this email. Subject cannot be left empty.">hello world</asp:TextBox>
                 <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ControlToValidate="txb_Subject" ErrorMessage="Subject: cannot be empty.">*</asp:RequiredFieldValidator>
-                <asp:DropDownList ID="drp_MailFrom" runat="server" DataSourceID="objSource_EmailFrom" DataTextField="EmailAddress" DataValueField="EmailAddress" Width="160px" ToolTip="Select a FROM/Return address. You can edit these by clicking the  edit button.">
-                </asp:DropDownList>
-                <asp:Button ID="Button1" runat="server" CausesValidation="False" Font-Size="10px" PostBackUrl="~/Users/Admin/email_options.aspx" Text="edit" Width="30px" ToolTip="Click to configure SMTP and FROM email addresses." />
             </td>
         </tr>
     </table>
     </div>
     
-    <%-- object datasource for FROM addresses --%>
-    <asp:ObjectDataSource ID="objSource_EmailFrom" runat="server" OldValuesParameterFormatString="original_{0}" SelectMethod="GetByFromEmail" TypeName="DataSet1TableAdapters.EmailFromTableAdapter">
-    </asp:ObjectDataSource>
-    
     <%-- Rich Text Editor embeded in FormView --%>
     <asp:ValidationSummary ID="ValidationSummary1" runat="server" />
      
-    <%-- fck editor  --%>   
-    <FCKeditorV2:FCKeditor ID="WYSIWYGEditor_EmailBody" runat="server" 
-    BasePath="~/FCKeditor/" Height="400px" >
-
-    <asp:ToolkitScriptManager runat="Server" />
 
     <asp:TextBox
         ID="WYSIWYGEditor_EmailBody"
         TextMode="MultiLine"
-        Columns="60"
-        Rows="8"
+        Columns="80"
+        Rows="10"
         runat="server" 
         Text="Start typing your email here..."
         />

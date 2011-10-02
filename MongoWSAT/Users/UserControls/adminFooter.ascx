@@ -2,6 +2,6 @@
 
 <div class="footerControl">
     <div class="footerTitleText">Copyright &copy; <asp:Literal ID="dateYear" runat="server"></asp:Literal> 
-    Core Plus Software, LLC.  All rights reserved.
+    All rights reserved.
     </div>
 </div>

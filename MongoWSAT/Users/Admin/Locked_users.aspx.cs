@@ -128,7 +128,7 @@ public partial class Admin_Locked_users : System.Web.UI.Page
         ProfileManager.DeleteProfile(userName);
         Membership.DeleteUser(userName);
 
-        //Response.Redirect("Users.aspx");
+        //Response.Redirect("default.aspx");
         lblDeleteSuccess.Visible = true;
     }
 
@@ -157,7 +157,7 @@ public partial class Admin_Locked_users : System.Web.UI.Page
                 ProfileManager.DeleteProfile(userName);
                 Membership.DeleteUser(userName);
 
-                //Response.Redirect("Users.aspx");
+                //Response.Redirect("default.aspx");
                 lblDeleteSuccess.Visible = true;
             }
         }

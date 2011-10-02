@@ -152,7 +152,7 @@ public partial class Admin_Users_by_role : System.Web.UI.Page
         ProfileManager.DeleteProfile(userName);
         Membership.DeleteUser(userName);
 
-        //Response.Redirect("Users.aspx");
+        //Response.Redirect("default.aspx");
         lblDeleteSuccess.Visible = true;
     }
 
@@ -181,7 +181,7 @@ public partial class Admin_Users_by_role : System.Web.UI.Page
                 ProfileManager.DeleteProfile(userName);
                 Membership.DeleteUser(userName);
 
-                //Response.Redirect("Users.aspx");
+                //Response.Redirect("default.aspx");
                 lblDeleteSuccess.Visible = true;
             }
         }

@@ -54,7 +54,7 @@ public partial class Admin_Quick_contact : System.Web.UI.Page
                             string Email = GridView1.DataKeys[row.RowIndex].Value.ToString();
 
                             MyMailer.To.Add(Email);
-                            MyMailer.From = new MailAddress(drp_MailFrom.Text);
+                            MyMailer.From = new MailAddress(txtMailFrom.Text);
                             MyMailer.Subject = txb_Subject.Text;
                             MyMailer.Body = WYSIWYGEditor_EmailBody.Text;
                             MyMailer.IsBodyHtml = Convert.ToBoolean(rbt_BodyTextType.SelectedValue);
