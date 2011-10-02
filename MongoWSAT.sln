@@ -6,7 +6,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B96C9223-0E47-4F6E-A4E5-A7A960362025}"
 	ProjectSection(SolutionItems) = preProject
 		MongoWSAT.vsmdi = MongoWSAT.vsmdi
-		README = README
+		README.md = README.md
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
