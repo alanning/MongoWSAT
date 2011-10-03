@@ -19,10 +19,10 @@ Motivation
 
 Provide a quick way to administer users for ASP.NET websites (both MVC and WebForms) which use MongoDB rather than Sql Server.
 
-ASP.NET MVC sites can use ASP.NET pages without issue so Hunzonian's [MyWSAT][1] offers a great way to get up and running quickly. But MyWSAT is closely tied to SQL Server.  
-This project is a port of an older version of the MyWSAT Starter Kit which was not so closely tied to Sql Server.
+Hunzonian's [MyWSAT][1] project offers a great way to get up and running quickly with user administration but MyWSAT is closely tied to SQL Server.  
+MongoWSAT is a port of an older version of the MyWSAT Starter Kit which was not so dependent on Sql Server and therefore easier to convert.  See below for a list of changes made.
 
-Converting this project to use a NoSQL data store other than Mongo should be fairly straightforward.  The only place that explicitly relies on Mongo now is the WebProfile class.
+Using a NoSQL data store other than Mongo should be fairly straightforward.  Just modify WebProfile to save to your datastore of choice and switch out the Membership and Role providers in web.config.
 
 [1]: http://mywsat.codeplex.com/ "MyWSAT Website Starter Kit"
 

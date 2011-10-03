@@ -32,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PackageAsSingleFile>false</PackageAsSingleFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AjaxControlToolkit">
@@ -489,6 +490,15 @@
     <Content Include="Users\Members\web.config" />
     <Content Include="Users\Users.master" />
     <Content Include="Views\Home\AfterLogin.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="connectionStrings.release.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="smtp.debug.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="smtp.release.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
