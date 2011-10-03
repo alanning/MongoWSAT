@@ -1,22 +1,24 @@
 MongoWSAT
 =========
 
-A pre-configured user administration section for ASP.NET websites (both MVC and WebForms) using MongoDB Membership and Role Providers.
+A pre-configured user administration section for ASP.NET websites (both MVC and WebForms) using MongoDB Membership and Role Providers.  
+(Requires .NET Framework 4.0)
 
 
 Usage
 -----
 
-  1. Add MongoWSAT to your web project (MVC or WebForms) using Nuget.  In addition to the referenced DLLs, the following files and folders will be added to your project:
+  1. Make sure your project is targetting the .NET 4.0 Framework
+  2. Add MongoWSAT to your web project (MVC or WebForms) using Nuget.  In addition to the referenced DLLs, the following files and folders will be added to your project:
 	 * Users/
 	 * exampleConfigs/
 	 * App_Themes
 	 * Site.master
 	 * MongoWSAT-README.md
-  2. Modify web.config and global.asax using the files in exampleConfigs/ as a guide
-  3. Point browser to 'Users/Default.aspx' and click the 'Create Admin' button to crate the default admin account and role
-  4. Decide whether to use Members/MyAccountInfo.aspx page for User self-management of Password, Profile, and Email.  If not, remove the Members/* pages.
-  5. Decide whether to use Login.aspx, Register.aspx, and RecoverPassword.aspx.  Remove if unused.
+  3. Modify web.config and global.asax using the files in exampleConfigs/ as a guide
+  4. Point browser to 'Users/Default.aspx' and click the 'Create Admin' button to crate the default admin account and role
+  5. Decide whether to use Members/MyAccountInfo.aspx page for User self-management of Password, Profile, and Email.  If not, remove the Members/* pages.
+  6. Decide whether to use Login.aspx, Register.aspx, and RecoverPassword.aspx.  Remove if unused.
      
 
 Motivation
@@ -41,6 +43,7 @@ License
 Dependencies
 ------------
 
+(Requires .NET Framework 4.0)
 All dependencies are included in the lib folder rather than using Nuget packages in order to save space and make the install quicker.
 
 * MongoProviders - https://github.com/alanning/MongoProviders
@@ -79,3 +82,11 @@ Changes from MyWSAT
 7. Make Dashboard default to showing Users by Name
 
 8. Remove usage of database for storing SMTP server and email From addresses in Quick_contact.aspx.cs
+
+
+Troubleshooting
+---------------
+
+* Problem: Building solution gives Mongo 'missing reference' errors
+  Reason: This occurs because the project is not targetting the .NET 4 Framework.  MongoWSAT requires .NET 4.0 and the Nuget package knows this so it won't add references to the required DLLs if the project isn't targetting 4.0.  Unfortunately there is no way that I know of to specify that an entire Nuget package requires 4.0.
+  Resolution: Change the project to target the .NET 4 Framework (under the project properties, application tab).
