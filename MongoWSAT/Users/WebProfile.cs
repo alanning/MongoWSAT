@@ -12,7 +12,6 @@ using System;
 using System.Web;
 using System.Web.Profile;
 using System.Configuration;
-using AutoMapper;
 using System.Web.Security;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;

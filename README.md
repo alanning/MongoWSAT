@@ -36,12 +36,12 @@ License
 Dependencies
 ------------
 
-All dependencies are included.
+All dependencies are included in the lib folder rather than using Nuget packages in order to save space and make the install quicker.
 
 * MongoProviders - https://github.com/alanning/MongoProviders
-* AjaxControlToolkit - NuGet
-* FluentMongo - NuGet
-* Mongo Csharp Drivers - NuGet
+* AjaxControlToolkit - http://ajaxcontroltoolkit.codeplex.com/
+* FluentMongo - https://github.com/craiggwilson/fluent-mongo
+* Mongo Csharp Drivers - https://github.com/mongodb/mongo-csharp-driver
 
 
 Notes
@@ -67,7 +67,7 @@ Changes from MyWSAT
 
 4. Enable usage of Hashed passwords.  MyWSAT assumes password retrieval is enabled which is not possible with hashed passwords.
 
-5. Convert from using Profile Provider to using serialized class
+5. Convert from using Profile Provider to using serialized class (WebProfile)
 
 6. Convert from using Membership.xsd table adapter to using Membership provider
 
