@@ -8,7 +8,7 @@ Usage
 -----
 
   1. Add MongoWSAT to your web project (MVC or WebForms) using Nuget
-  2. Add relevant sections from 'example_web.config' and 'example_global.asax' files
+  2. Modify web.config and global.asax using the files in exampleConfigs as a guide
   3. Point browser to 'Users/Default.aspx' and follow instructions to create the default admin account and role
   4. Decide whether to use Members/MyAccountInfo.aspx page for User self-management of Password, Profile, and Email.  If not, remove the Members/* pages.
   5. Decide whether to use Login.aspx, Register.aspx, and RecoverPassword.aspx.  Remove if unused.
