@@ -49,14 +49,14 @@ public partial class _Default {
     protected global::System.Web.UI.WebControls.Button btn1;
     
     /// <summary>
-    /// btn2 control.
+    /// lbl control.
     /// </summary>
     /// <remarks>
     /// Auto-generated field.
     /// To modify move field declaration from designer file to code-behind file.
     /// </remarks>
-    protected global::System.Web.UI.WebControls.Button btn2;
-    
+    protected global::System.Web.UI.WebControls.Label err;
+
     /// <summary>
     /// lbl control.
     /// </summary>

@@ -16,7 +16,7 @@ Usage
 	 * Site.master
 	 * MongoWSAT-README.md
   3. Modify web.config and global.asax using the files in exampleConfigs/ as a guide
-  4. Point browser to 'Users/Default.aspx' and click the 'Create Admin' button to crate the default admin account and role
+  4. Point browser to 'Users/' and follow the instructions to set up admin and test users.
   5. Decide whether to use Members/MyAccountInfo.aspx page for User self-management of Password, Profile, and Email.  If not, remove the Members/* pages.
   6. Decide whether to use Login.aspx, Register.aspx, and RecoverPassword.aspx.  Remove if unused.
      
