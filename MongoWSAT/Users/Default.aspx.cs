@@ -38,11 +38,11 @@ public partial class _Default : System.Web.UI.Page
             err.Text = "Created test user but could not create admin user. An error occurred while creating admin user: " + ErrorCodeToString(status);
             return;
         }
-        if (!Roles.RoleExists("Administrators"))
+        if (!Roles.RoleExists("administrator"))
         {
-            Roles.CreateRole("Administrators");
+            Roles.CreateRole("administrator");
         }
-        Roles.AddUserToRole(mu.UserName, "Administrators");
+        Roles.AddUserToRole(mu.UserName, "administrator");
         lbl.Text = "Success";
     }
 
