@@ -44,7 +44,10 @@ namespace MongoWSAT.Controllers
                 else
                 {
                     var user = Membership.GetUser(model.UserName);
-                    if (user.IsLockedOut)
+                    if (null == user) {
+                        ModelState.AddModelError("", "The user name or password provided is incorrect.");
+                    }
+                    else if (user.IsLockedOut)
                     {
                         ModelState.AddModelError("", "Your account is currently locked due to too many incorrect login attempts.");
                     }

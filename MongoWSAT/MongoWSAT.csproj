@@ -52,7 +52,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="MongoProviders">
+    <Reference Include="MongoProviders, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\MongoProviders.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
